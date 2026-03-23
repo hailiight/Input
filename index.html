@@ -1,0 +1,3489 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khảo Sát Thực Trạng Nhà Máy — Lifes Food</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>:root {
+  --cream: #f7f4ee;
+  --cream2: #ede9e0;
+  --ink: #1a1814;
+  --ink2: #3d3a34;
+  --ink3: #7a7468;
+  --white: #ffffff;
+  --rule: #d5d0c6;
+  --rule2: #c2bdb2;
+  --gold: #a8823a;
+  --gold-l: #f5ead5;
+  --green: #2e6b4a;
+  --green-l: #ddeee5;
+  --red: #b83232;
+  --red-l: #fbe8e8;
+  --blue: #2156a0;
+  --blue-l: #e4ecf8;
+  --purple: #5e3a8c;
+  --purple-l: #ede5f8;
+  --orange: #b85a1e;
+  --orange-l: #faeadf;
+  --r: 3px;
+  --r2: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── HERO HEADER ── */
+.hero {
+  background: var(--ink);
+  color: var(--white);
+  padding: 48px 60px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 320px; height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 39px,
+    rgba(255,255,255,0.03) 39px,
+    rgba(255,255,255,0.03) 40px
+  );
+}
+.hero-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-kicker::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+.hero-title em {
+  font-style: italic;
+  color: rgba(255,255,255,0.55);
+}
+.hero-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  max-width: 500px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+.hero-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-chip {
+  padding: 5px 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.3px;
+}
+.hero-chip.active { border-color: var(--gold); color: var(--gold); }
+
+/* ── DEPT NAV ── */
+.dept-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 60px;
+  display: flex;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.dept-tab {
+  padding: 14px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  position: relative;
+  font-family: 'DM Sans', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.dept-tab:hover { color: var(--ink2); }
+.dept-tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+.dept-tab.done { color: var(--green); }
+.dept-tab.done::after {
+  content: '✓';
+  font-size: 10px;
+  background: var(--green);
+  color: var(--white);
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600;
+  position: absolute; top: 10px; right: 8px;
+}
+.dept-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── LAYOUT ── */
+.body-wrap { max-width: 960px; margin: 0 auto; padding: 40px 60px 100px; }
+
+/* ── SECTION ── */
+.dept-section { display: none; }
+.dept-section.active { display: block; animation: slideIn 0.2s ease; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 28px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;
+}
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 26px; font-weight: 300; color: var(--ink); letter-spacing: -0.3px;
+}
+.section-badge {
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 11px; font-weight: 500;
+  font-family: 'DM Mono', monospace; flex-shrink: 0;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--r2);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: none;
+  position: static;
+}
+.card::before { display: none; }
+.card-head {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--cream);
+}
+.card-head-title {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--ink3); flex: 1;
+}
+.card-head-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink3);
+  background: var(--rule); padding: 2px 8px; border-radius: 10px;
+}
+.card-body { padding: 20px; }
+
+/* ── FORM ── */
+.form-grid { display: grid; gap: 16px; margin-bottom: 16px; }
+.form-grid.g2 { grid-template-columns: 1fr 1fr; }
+.form-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid.g4 { grid-template-columns: repeat(4,1fr); }
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+label {
+  font-size: 12px; font-weight: 500; color: var(--ink2);
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'DM Sans', sans-serif;
+  text-transform: none; letter-spacing: normal;
+}
+.req { color: var(--red); font-size: 10px; }
+.lbl-hint { font-weight: 300; color: var(--ink3); font-size: 11px; }
+
+input[type=text], input[type=number], input[type=date],
+input[type=email], select, textarea {
+  width: 100%; height: 38px; padding: 0 12px;
+  border: 1px solid var(--rule2); border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--ink);
+  background: var(--white); outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+  -webkit-appearance: none;
+}
+textarea { height: auto; padding: 10px 12px; resize: vertical; min-height: 72px; line-height: 1.6; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(168,130,58,0.1);
+}
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a7468'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px;
+}
+select option { background: var(--white); color: var(--ink); }
+
+.unit-wrap { position: relative; }
+.unit-wrap input { padding-right: 52px; }
+.unit-tag {
+  position: absolute; right: 11px; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink3);
+  pointer-events: none; letter-spacing: 0.3px;
+}
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip-lbl { position: relative; }
+.chip-lbl input { position: absolute; opacity: 0; width: 0; height: 0; }
+.chip {
+  display: inline-flex; align-items: center;
+  padding: 5px 13px; height: 30px;
+  border: 1px solid var(--rule2); border-radius: 15px;
+  font-size: 12px; font-weight: 500; color: var(--ink3);
+  cursor: pointer; transition: all 0.12s; user-select: none;
+}
+.chip-lbl input:checked + .chip { border-color: var(--gold); background: var(--gold-l); color: var(--gold); }
+.chip-lbl.c-green input:checked + .chip { border-color: var(--green); background: var(--green-l); color: var(--green); }
+.chip-lbl.c-red input:checked + .chip { border-color: var(--red); background: var(--red-l); color: var(--red); }
+.chip-lbl.c-blue input:checked + .chip { border-color: var(--blue); background: var(--blue-l); color: var(--blue); }
+.chip-lbl.c-purple input:checked + .chip { border-color: var(--purple); background: var(--purple-l); color: var(--purple); }
+.chip:hover { border-color: var(--gold); }
+
+/* Score grid */
+.score-grid { display: grid; grid-template-columns: 1fr repeat(5,44px); gap: 0; font-size: 12px; }
+.score-grid .sg-header {
+  font-weight: 600; color: var(--ink3); font-size: 10px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 8px 10px; background: var(--cream2);
+  border-bottom: 1px solid var(--rule); text-align: center;
+}
+.score-grid .sg-header:first-child { text-align: left; }
+.score-row { display: contents; }
+.score-row > * { padding: 10px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; }
+.score-row:last-child > * { border-bottom: none; }
+.score-row-label { color: var(--ink2); font-size: 13px; }
+.score-cell { justify-content: center; }
+.score-radio { width: 16px; height: 16px; cursor: pointer; accent-color: var(--gold); }
+
+/* Table */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  background: var(--cream2); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase; color: var(--ink3);
+  padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--rule2);
+  white-space: nowrap;
+}
+.data-table td { padding: 5px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table td input, .data-table td select { height: 33px; font-size: 12.5px; }
+.data-table td input[type=text] { border: none; background: transparent; padding: 4px 8px; }
+.data-table td input[type=text]:focus { background: var(--cream); border: 1px solid var(--gold); border-radius: var(--r); }
+
+.add-btn {
+  width: 100%; height: 34px;
+  border: 1.5px dashed var(--rule2); border-radius: var(--r);
+  background: none; color: var(--ink3);
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px;
+}
+.add-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-l); }
+
+/* Callout */
+.callout {
+  display: flex; gap: 12px; padding: 13px 16px;
+  border-radius: var(--r); margin-bottom: 16px;
+  font-size: 13px; line-height: 1.5;
+}
+.callout.info { background: var(--blue-l); border-left: 3px solid var(--blue); color: var(--blue); }
+.callout.warn { background: var(--orange-l); border-left: 3px solid var(--orange); color: var(--orange); }
+.callout.green { background: var(--green-l); border-left: 3px solid var(--green); color: var(--green); }
+.callout-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+.callout strong { font-weight: 600; display: block; margin-bottom: 2px; }
+
+/* Divider */
+.divider { height: 1px; background: var(--rule); margin: 18px 0; }
+
+/* Toggle */
+.toggle-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; background: var(--cream);
+  border: 1px solid var(--rule); border-radius: var(--r);
+  cursor: pointer; user-select: none; transition: background 0.12s;
+}
+.toggle-row:hover { background: var(--cream2); }
+.t-track {
+  width: 34px; height: 18px; background: var(--rule2);
+  border-radius: 9px; position: relative;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.t-thumb {
+  width: 14px; height: 14px; background: var(--white);
+  border-radius: 50%; position: absolute; top: 2px; left: 2px;
+  transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle-row.on .t-track { background: var(--green); }
+.toggle-row.on .t-thumb { transform: translateX(16px); }
+.t-label { font-size: 13px; font-weight: 500; }
+
+/* Progress */
+.progress-wrap {
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: var(--r2); padding: 16px 20px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.progress-bar-bg { flex: 1; height: 5px; background: var(--cream2); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--gold); border-radius: 3px; transition: width 0.3s ease; width: 0%; }
+.progress-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); white-space: nowrap; }
+
+/* Donut chart */
+.chart-dashboard {
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: var(--r2); padding: 20px 24px 16px;
+  margin-bottom: 24px; display: flex; align-items: center; gap: 28px;
+}
+.chart-wrap { position: relative; flex-shrink: 0; width: 120px; height: 120px; }
+.chart-wrap canvas { display: block; }
+.chart-center-text {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); text-align: center; pointer-events: none;
+}
+.chart-center-pct {
+  font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300;
+  color: var(--ink); line-height: 1; display: block;
+}
+.chart-center-label {
+  font-size: 10px; color: var(--ink3); letter-spacing: 0.5px;
+  text-transform: uppercase; font-family: 'DM Mono', monospace;
+}
+.chart-legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.legend-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; cursor: pointer; padding: 5px 8px;
+  border-radius: var(--r); transition: background 0.12s;
+}
+.legend-item:hover { background: var(--cream); }
+.legend-item.done { color: var(--ink2); }
+.legend-item.pending { color: var(--ink3); }
+.legend-item.sending { color: var(--blue); }
+.legend-item.error { color: var(--red); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-name { flex: 1; font-weight: 500; }
+.legend-status {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.3px; padding: 2px 7px; border-radius: 10px; font-weight: 600;
+}
+.legend-status.done    { background: var(--green-l); color: var(--green); }
+.legend-status.pending { background: var(--cream2);  color: var(--ink3); }
+.legend-status.sending { background: var(--blue-l);  color: var(--blue); }
+.legend-status.error   { background: var(--red-l);   color: var(--red); }
+
+/* Action bar */
+.action-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--ink); padding: 14px 60px;
+  display: flex; align-items: center; justify-content: space-between; z-index: 60;
+}
+.action-bar::before { display: none; }
+.action-left  { display: flex; align-items: center; gap: 12px; }
+.action-right { display: flex; align-items: center; gap: 10px; }
+.autosave {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 7px;
+}
+.dot-pulse {
+  width: 6px; height: 6px; background: var(--gold);
+  border-radius: 50%; animation: dotpulse 2.5s infinite;
+}
+@keyframes dotpulse { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+
+/* Buttons */
+.btn {
+  height: 38px; padding: 0 20px; border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-weight: 500; cursor: pointer; border: none;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s; text-decoration: none;
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.9); }
+.btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.3); }
+.btn-outline:hover { border-color: rgba(255,255,255,0.6); }
+.btn-gold  { background: var(--gold);  color: var(--white); }
+.btn-gold:hover  { background: #8e6c2b; }
+.btn-green { background: var(--green); color: var(--white); }
+.btn-green:hover { background: #225238; }
+.btn-send-done {
+  background: var(--green-l) !important; color: var(--green) !important;
+  border: 1.5px solid var(--green) !important; pointer-events: none;
+}
+.btn-send-sending { opacity: 0.7; pointer-events: none; }
+.btn-send-error {
+  background: var(--red-l) !important; color: var(--red) !important;
+  border: 1.5px solid var(--red) !important;
+}
+
+/* Completion */
+.completion { max-width: 600px; margin: 60px auto; text-align: center; display: none; }
+.completion-check {
+  width: 72px; height: 72px; background: var(--green);
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 30px; margin: 0 auto 24px;
+  animation: none; box-shadow: none;
+}
+.completion h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; margin-bottom: 8px; }
+.completion p { color: var(--ink3); margin-bottom: 28px; }
+.export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.export-card {
+  padding: 20px; border: 1px solid var(--rule); border-radius: var(--r2);
+  background: var(--white); cursor: pointer; transition: all 0.15s; text-align: left;
+}
+.export-card:hover { border-color: var(--gold); background: var(--gold-l); transform: none; box-shadow: none; }
+.export-card-icon { font-size: 24px; margin-bottom: 8px; }
+.export-card-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: var(--ink); }
+.export-card-sub { font-size: 12px; color: var(--ink3); font-family: 'DM Mono', monospace; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .hero { padding: 32px 24px 28px; }
+  .dept-nav { padding: 0 16px; overflow-x: auto; }
+  .body-wrap { padding: 24px 16px 100px; }
+  .form-grid.g2, .form-grid.g3, .form-grid.g4 { grid-template-columns: 1fr; }
+  .action-bar { padding: 12px 16px; }
+}
+
+/* ── section-head alias (HTML uses .section-head) ── */
+.section-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 28px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.section-head-left {}
+
+/* ── Validate toast ── */
+.validate-toast {
+  position: fixed; bottom: 72px; right: 24px;
+  background: var(--white); border: 1px solid var(--rule2);
+  border-left: 3px solid var(--red); border-radius: var(--r2);
+  padding: 14px 18px; min-width: 280px; max-width: 360px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 500; display: none;
+}
+.validate-toast.show { display: block; animation: slideInRight 0.2s ease; }
+@keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+.validate-toast-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+.validate-toast-list { list-style: none; padding: 0; font-size: 12px; color: var(--ink2); line-height: 1.8; font-family: 'DM Mono', monospace; }
+.validate-toast-list li::before { content: '✗ '; color: var(--red); font-weight: 600; }
+.validate-toast-close { position: absolute; top: 8px; right: 10px; background: none; border: none; font-size: 16px; cursor: pointer; color: var(--ink3); }
+.validate-toast-close:hover { color: var(--ink); }
+.field-error input, .field-error select, .field-error textarea {
+  border-color: var(--red) !important; background: var(--red-l) !important;
+}
+.field-error-msg { font-size: 11px; color: var(--red); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+/* ── Confirm modal ── */
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(26,24,20,0.55);
+  backdrop-filter: blur(4px); z-index: 600; display: none;
+  align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; animation: fadeIn 0.15s ease; }
+.confirm-box {
+  background: var(--white); border-radius: 10px; padding: 32px 36px;
+  width: 400px; max-width: 92vw;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18); text-align: center;
+}
+.confirm-icon { font-size: 32px; margin-bottom: 10px; }
+.confirm-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; margin-bottom: 10px; color: var(--ink); }
+.confirm-sub { font-size: 13px; color: var(--ink3); line-height: 1.6; margin-bottom: 24px; }
+.confirm-sub strong { color: var(--ink2); }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; }
+.confirm-actions .btn { flex: 1; justify-content: center; height: 40px; }
+
+/* ── Reset button ── */
+#btnResetTab {
+  background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.35); font-size: 12px; padding: 0 14px; height: 36px;
+  border-radius: var(--r); cursor: not-allowed; display: flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; transition: all 0.18s; pointer-events: none;
+}
+#btnResetTab.visible { background: var(--red-l); border-color: var(--red); color: var(--red); cursor: pointer; pointer-events: auto; }
+#btnResetTab.visible:hover { background: var(--red); color: var(--white); }
+#btnCheck { background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.75); font-size: 12px; }
+#btnCheck:hover { background: var(--gold-l); border-color: var(--gold); color: var(--gold); }
+#btnCheck.ok { background: var(--green-l) !important; border-color: var(--green) !important; color: var(--green) !important; }
+
+/* ── Dashboard overlay ── */
+.dash-overlay { position: fixed; inset: 0; background: var(--cream); z-index: 200; display: none; overflow-y: auto; }
+.dash-overlay.open { display: block; animation: fadeIn 0.2s ease; }
+.dash-topbar { background: var(--white); border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 52px; position: sticky; top: 0; z-index: 10; }
+.dash-topbar-title { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--ink3); text-transform: uppercase; }
+.dash-close { background: var(--cream); border: 1px solid var(--rule); color: var(--ink3); border-radius: var(--r2); padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.dash-close:hover { border-color: var(--ink); color: var(--ink); }
+.dash-body { max-width: 1000px; margin: 0 auto; padding: 28px 32px 60px; }
+.dash-summary { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 24px; }
+.dash-dept-card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r2); padding: 14px 16px; cursor: pointer; transition: all 0.15s; }
+.dash-dept-card:hover { border-color: var(--gold); }
+.dash-dept-card.sent    { border-left: 3px solid var(--green); }
+.dash-dept-card.pending { border-left: 3px solid var(--rule2); opacity: 0.6; }
+.dash-dept-card.error   { border-left: 3px solid var(--red); }
+.dash-dept-name   { font-size: 10px; font-weight: 600; color: var(--ink3); margin-bottom: 6px; font-family: 'DM Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+.dash-dept-status { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 10px; display: inline-block; }
+.dash-dept-status.sent    { background: var(--green-l); color: var(--green); }
+.dash-dept-status.pending { background: var(--cream2); color: var(--ink3); }
+.dash-dept-status.error   { background: var(--red-l); color: var(--red); }
+.dash-dept-person { font-size: 11px; color: var(--ink3); margin-top: 6px; font-family: 'DM Mono', monospace; }
+.dash-section-head { display: flex; align-items: center; gap: 10px; margin: 24px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.dash-section-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); font-family: 'DM Mono', monospace; }
+.maturity-grid { display: grid; grid-template-columns: 140px repeat(5,1fr); background: var(--white); border: 1px solid var(--rule); border-radius: var(--r2); overflow: hidden; margin-bottom: 16px; }
+.mg-header { padding: 9px 14px; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); background: var(--cream2); border-bottom: 1px solid var(--rule); font-family: 'DM Mono', monospace; }
+.mg-label { padding: 12px 14px; font-size: 12px; font-weight: 500; color: var(--ink2); border-bottom: 1px solid var(--rule); display: flex; align-items: center; }
+.mg-cell { padding: 12px 8px; border-bottom: 1px solid var(--rule); border-left: 1px solid var(--rule); display: flex; align-items: center; justify-content: center; }
+.mg-badge { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+.mg-badge.L1 { background: var(--red-l);    color: var(--red);    }
+.mg-badge.L2 { background: var(--orange-l); color: var(--orange); }
+.mg-badge.L3 { background: var(--blue-l);   color: var(--blue);   }
+.mg-badge.L4 { background: var(--green-l);  color: var(--green);  }
+.mg-badge.na { background: var(--cream2);   color: var(--ink3);   }
+.pain-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--rule); background: var(--white); }
+.pain-label { flex: 1; font-size: 12px; color: var(--ink2); font-weight: 500; }
+.pain-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); width: 28px; text-align: right; flex-shrink: 0; }
+.pain-bar-wrap { width: 160px; height: 6px; background: var(--cream2); border-radius: 3px; overflow: hidden; }
+.pain-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--red), #f28c8c); transition: width 0.5s ease; }
+.kpi-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.kpi-table th { background: var(--cream2); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--rule2); font-family: 'DM Mono', monospace; }
+.kpi-table td { padding: 10px 14px; border-bottom: 1px solid var(--rule); color: var(--ink2); }
+.kpi-val { font-weight: 600; color: var(--green); font-family: 'DM Mono', monospace; }
+
+/* ── Panel overlays (Guide + Action Plan) ── */
+.panel-overlay { position: fixed; inset: 0; background: rgba(26,24,20,0.7); z-index: 300; display: none; overflow-y: auto; padding: 24px; }
+.panel-overlay.open { display: block; animation: fadeIn 0.2s ease; }
+.panel-inner { max-width: 860px; margin: 0 auto; background: var(--white); border-radius: 10px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.2); }
+.panel-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px; border-bottom: 1px solid var(--rule); background: var(--cream); }
+.panel-top-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: var(--ink); }
+.panel-close { background: var(--cream2); border: 1px solid var(--rule); color: var(--ink3); border-radius: var(--r); width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.panel-close:hover { border-color: var(--ink); color: var(--ink); }
+.panel-body { padding: 28px; }
+.guide-dept { margin-bottom: 20px; border: 1px solid var(--rule); border-radius: var(--r2); overflow: hidden; }
+.guide-dept-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; transition: filter 0.12s; font-family: 'DM Sans', sans-serif; }
+.guide-dept-head:hover { filter: brightness(0.95); }
+.guide-dept-body { padding: 16px 18px; border-top: 1px solid var(--rule); background: var(--white); }
+.guide-step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+.guide-step:last-child { margin-bottom: 0; }
+.guide-step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; font-family: 'DM Mono', monospace; }
+.guide-step-body { flex: 1; }
+.guide-step-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; color: var(--ink2); }
+.guide-step-desc { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+.guide-tip { background: var(--gold-l); border-left: 3px solid var(--gold); border-radius: 0 4px 4px 0; padding: 10px 14px; font-size: 12px; color: var(--ink2); line-height: 1.6; margin-top: 14px; }
+.guide-tip strong { color: var(--gold); }
+
+/* ── Action Plan ── */
+.ap-hero { background: #1a1814; padding: 28px 28px 24px; position: relative; overflow: hidden; }
+.ap-hero-kicker { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--gold); opacity: 0.8; text-transform: uppercase; margin-bottom: 10px; }
+.ap-hero-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; color: var(--white); margin-bottom: 6px; }
+.ap-hero-sub { font-size: 13px; color: rgba(255,255,255,0.5); }
+.ap-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 20px; }
+.ap-kpi { background: rgba(168,130,58,0.15); border: 1px solid rgba(168,130,58,0.3); border-radius: var(--r2); padding: 14px 16px; text-align: center; }
+.ap-kpi-val { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; color: var(--gold); display: block; margin-bottom: 2px; }
+.ap-kpi-label { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 0.8px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
+.ap-body { padding: 24px 28px 28px; background: var(--cream); }
+.ap-phase { margin-bottom: 28px; }
+.ap-phase-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.ap-phase-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.ap-phase-badge.urgent { background: var(--gold-l); color: var(--gold); border: 1px solid rgba(168,130,58,0.3); }
+.ap-phase-badge.plan   { background: var(--blue-l); color: var(--blue); border: 1px solid rgba(33,86,160,0.2); }
+.ap-phase-title { font-size: 16px; font-weight: 600; color: var(--ink); font-family: 'Fraunces', serif; font-weight: 300; }
+.ap-items { display: flex; flex-direction: column; gap: 10px; }
+.ap-item { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start; padding: 14px 16px; border: 1px solid var(--rule); border-radius: var(--r2); background: var(--white); transition: border-color 0.12s; }
+.ap-item:hover { border-color: var(--gold); }
+.ap-item.urgent-item { border-left: 3px solid var(--gold); }
+.ap-item.plan-item   { border-left: 3px solid var(--blue); }
+.ap-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: 'DM Mono', monospace; flex-shrink: 0; margin-top: 1px; }
+.ap-num.urgent-num { background: var(--gold-l); color: var(--gold); }
+.ap-num.plan-num   { background: var(--blue-l); color: var(--blue); }
+.ap-item-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; color: var(--ink); }
+.ap-item-desc  { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+.ap-item-tags  { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.ap-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; font-family: 'DM Mono', monospace; }
+.ap-tag.dept { background: var(--cream2); color: var(--ink3); border: 1px solid var(--rule); }
+.ap-tag.kpi  { background: var(--gold-l); color: var(--gold); border: 1px solid rgba(168,130,58,0.2); }
+.ap-item-deadline { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); white-space: nowrap; margin-top: 4px; text-align: right; }
+.ap-item-deadline.hot { color: var(--red); font-weight: 600; }
+.gantt-wrap { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r2); overflow: hidden; margin-bottom: 28px; }
+.gantt-title { padding: 12px 16px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); background: var(--cream2); border-bottom: 1px solid var(--rule); font-family: 'DM Mono', monospace; }
+.gantt-months { display: grid; grid-template-columns: 140px repeat(6,1fr); background: var(--cream2); border-bottom: 1px solid var(--rule); font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; color: var(--ink3); }
+.gantt-months > div { padding: 6px 0; text-align: center; }
+.gantt-months > div:first-child { text-align: left; padding-left: 12px; }
+.gantt-row { display: grid; grid-template-columns: 140px repeat(6,1fr); border-bottom: 1px solid var(--rule); align-items: center; min-height: 38px; }
+.gantt-row:last-child { border-bottom: none; }
+.gantt-label { padding: 6px 12px; font-size: 11px; color: var(--ink2); font-weight: 500; line-height: 1.3; }
+.gantt-cell  { padding: 4px 3px; }
+.gantt-bar { height: 22px; border-radius: var(--r); display: flex; align-items: center; padding: 0 8px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'DM Mono', monospace; white-space: nowrap; overflow: hidden; width: 100%; }
+.gantt-bar.jade  { background: linear-gradient(90deg, var(--green), #3a8a62); color: var(--white); }
+.gantt-bar.gold  { background: linear-gradient(90deg, #8e6c2b, var(--gold)); color: var(--white); }
+.gantt-bar.slate { background: var(--cream2); color: var(--ink3); border: 1px solid var(--rule2); }
+.gantt-span-2 { grid-column: span 2; }
+.gantt-span-3 { grid-column: span 3; }
+.gantt-span-4 { grid-column: span 4; }
+.readiness-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+.readiness-card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r2); padding: 16px; }
+.readiness-card-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); margin-bottom: 14px; font-family: 'DM Mono', monospace; }
+.readiness-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; font-size: 12px; }
+.readiness-bar-label { width: 100px; color: var(--ink2); font-weight: 500; flex-shrink: 0; }
+.readiness-bar-track { flex: 1; height: 6px; background: var(--cream2); border-radius: 3px; overflow: hidden; }
+.readiness-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.readiness-bar-val { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); width: 30px; text-align: right; }
+.ejs-overlay { position: fixed; inset: 0; background: rgba(26,24,20,0.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; }
+.ejs-modal { background: var(--white); border-radius: 10px; padding: 32px; width: 100%; max-width: 500px; box-shadow: 0 24px 48px rgba(0,0,0,0.18); position: relative; }
+.ejs-modal-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; margin-bottom: 6px; }
+.ejs-modal-sub { font-size: 13px; color: var(--ink3); margin-bottom: 24px; line-height: 1.6; }
+.ejs-step { background: var(--cream); border: 1px solid var(--rule); border-radius: var(--r); padding: 12px 14px; font-size: 12px; color: var(--ink2); line-height: 1.7; margin-bottom: 16px; }
+.ejs-step ol { padding-left: 16px; }
+.ejs-step a { color: var(--gold); text-decoration: none; font-weight: 500; }
+.ejs-step code { background: var(--cream2); border-radius: 3px; padding: 1px 5px; font-family: 'DM Mono', monospace; font-size: 11px; }
+.ejs-actions { display: flex; gap: 10px; margin-top: 20px; }
+.ejs-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--ink3); line-height: 1; padding: 4px 8px; border-radius: var(--r); }
+.ejs-close:hover { background: var(--cream); color: var(--ink); }
+.send-status { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--r); font-size: 13px; font-weight: 500; margin-bottom: 20px; }
+.send-status.sending { background: var(--blue-l); color: var(--blue); border: 1px solid #b3cbf5; }
+.send-status.success { background: var(--green-l); color: var(--green); border: 1px solid #9ed0b8; }
+.send-status.error   { background: var(--red-l); color: var(--red); border: 1px solid #f2b5b5; }
+.send-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.config-trigger { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 6px 14px; border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.config-trigger:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); }
+.config-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.config-dot.ready { background: #4ade80; }
+.ejs-badge { display: inline-block; padding: 2px 7px; background: var(--gold-l); color: var(--gold); border-radius: 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; font-family: 'DM Mono', monospace; }
+.nav-special { color: var(--ink3) !important; font-size: 11px !important; }
+.nav-special:hover { color: var(--ink2) !important; background: var(--cream); }
+.nav-action { color: var(--gold) !important; }
+.nav-action:hover { color: var(--gold) !important; background: var(--gold-l); }
+.dash-pending-msg { text-align: center; padding: 40px 20px; color: var(--ink3); font-size: 13px; background: var(--white); border: 1px dashed var(--rule2); border-radius: var(--r2); }
+.dash-section-badge { font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 3px; margin-left: auto; background: var(--cream2); color: var(--ink3); border: 1px solid var(--rule); }
+
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-kicker">Lifes Food · Lô E4-E5 Đường N9, KCN Nam Thuận, Xã Mỹ Hạnh, Tỉnh Tây Ninh, Việt Nam</div>
+  <h1 class="hero-title">Khảo sát thực trạng<br><em>vận hành nhà máy</em></h1>
+  <p class="hero-desc">Khảo sát thực trạng nhà máy.</p>
+  <div class="hero-chips">
+    <span class="hero-chip active">Sản xuất</span>
+    <span class="hero-chip active">Chất lượng QC/QA</span>
+    <span class="hero-chip active">Kho & Logistics</span>
+    <span class="hero-chip active">Kế hoạch & Vật tư</span>
+    <span class="hero-chip active">Bảo trì</span>
+  </div>
+  <button class="config-trigger" id="configTrigger" onclick="openConfig()">
+    <span class="config-dot" id="configDot"></span>
+    <span id="configLabel">Chưa cấu hình gửi email — nhấn để thiết lập</span>
+  </button>
+</div>
+
+<!-- DEPT NAV -->
+<nav class="dept-nav">
+  <div class="dept-tab active" data-dept="0" onclick="goTab(0)">
+    <span class="dept-dot" style="background:#a8823a"></span>Sản xuất
+  </div>
+  <div class="dept-tab" data-dept="1" onclick="goTab(1)">
+    <span class="dept-dot" style="background:#2e6b4a"></span>QC / QA
+  </div>
+  <div class="dept-tab" data-dept="2" onclick="goTab(2)">
+    <span class="dept-dot" style="background:#2156a0"></span>Kho & Logistics
+  </div>
+  <div class="dept-tab" data-dept="3" onclick="goTab(3)">
+    <span class="dept-dot" style="background:#5e3a8c"></span>Kế hoạch & Vật tư
+  </div>
+  <div class="dept-tab" data-dept="4" onclick="goTab(4)">
+    <span class="dept-dot" style="background:#b85a1e"></span>Bảo trì
+  </div>
+  <div class="dept-tab nav-special" id="dashTab" onclick="openDashboard()" style="margin-left:auto;position:relative;">
+    <span style="font-size:13px;">📊</span>Dashboard
+    <span id="dashBadge" style="display:none;position:absolute;top:8px;right:6px;width:8px;height:8px;background:#20c9b1;border-radius:50%;"></span>
+  </div>
+  <div class="dept-tab nav-special" onclick="openGuide()">
+    <span style="font-size:13px;">📋</span>Hướng dẫn
+  </div>
+  <div class="dept-tab nav-special nav-action" onclick="openAction()">
+    <span style="font-size:13px;">🎯</span>Action Plan
+  </div>
+</nav>
+
+<!-- BODY -->
+<div class="body-wrap">
+
+  <!-- CHART DASHBOARD -->
+  <div class="chart-dashboard" id="chartDashboard">
+    <div class="chart-wrap">
+      <canvas id="deptDonut" width="120" height="120"></canvas>
+      <div class="chart-center-text">
+        <span class="chart-center-pct" id="chartPct">0%</span>
+        <span class="chart-center-label">hoàn thành</span>
+      </div>
+    </div>
+    <div class="chart-legend" id="chartLegend">
+      <div class="legend-item pending" id="leg0" onclick="goTab(0)">
+        <span class="legend-dot" style="background:#a8823a"></span>
+        <span class="legend-name">Sản xuất</span>
+        <span class="legend-status pending" id="legStatus0">Chờ gửi</span>
+      </div>
+      <div class="legend-item pending" id="leg1" onclick="goTab(1)">
+        <span class="legend-dot" style="background:#2e6b4a"></span>
+        <span class="legend-name">Chất lượng QC/QA</span>
+        <span class="legend-status pending" id="legStatus1">Chờ gửi</span>
+      </div>
+      <div class="legend-item pending" id="leg2" onclick="goTab(2)">
+        <span class="legend-dot" style="background:#2156a0"></span>
+        <span class="legend-name">Kho & Logistics</span>
+        <span class="legend-status pending" id="legStatus2">Chờ gửi</span>
+      </div>
+      <div class="legend-item pending" id="leg3" onclick="goTab(3)">
+        <span class="legend-dot" style="background:#5e3a8c"></span>
+        <span class="legend-name">Kế hoạch & Vật tư</span>
+        <span class="legend-status pending" id="legStatus3">Chờ gửi</span>
+      </div>
+      <div class="legend-item pending" id="leg4" onclick="goTab(4)">
+        <span class="legend-dot" style="background:#b85a1e"></span>
+        <span class="legend-name">Bảo trì</span>
+        <span class="legend-status pending" id="legStatus4">Chờ gửi</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 0: SẢN XUẤT ══ -->
+  <div class="dept-section active" id="dept0">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-label">Phòng 01 — Sản Xuất & Xưởng</div>
+        <div class="section-title">Thực trạng năng lực sản xuất</div>
+      </div>
+      <span class="section-badge" style="background:var(--gold-l);color:var(--gold);">Production</span>
+    </div>
+
+    <!-- Thông tin chung -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-title">Thông tin người khai báo</div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field">
+            <label>Họ và tên <span class="req">*</span></label>
+            <input type="text" id="sx_name" placeholder="Trưởng bộ phận sản xuất">
+          </div>
+          <div class="field">
+            <label>Chức vụ</label>
+            <select id="sx_title">
+              <option>Trưởng xưởng</option>
+              <option>Phó xưởng</option>
+              <option>Trưởng ca</option>
+              <option>Giám đốc sản xuất</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Ngày khảo sát <span class="req">*</span></label>
+            <input type="date" id="sx_date">
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-title">Hệ thống báo cáo hiện tại — Report Maturity</div>
+          <div class="card-head-count">Lộ trình tự động hoá</div>
+        </div>
+        <div class="card-body">
+
+          <div class="callout warn" style="margin-bottom:16px;">
+            <span class="callout-icon">&#9889;</span>
+            <div>Nhằm khảo sát thực tế và ưu tiên cải tiến.</div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Mức độ trưởng thành báo cáo hiện tại <span class="req">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+              <label class="chip-lbl c-red" style="width:100%;">
+                <input type="radio" name="sx_maturity" value="L1">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L1</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Thủ công / Giấy tờ</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Sổ sách, biểu mẫu giấy, họp miệng</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl" style="width:100%;">
+                <input type="radio" name="sx_maturity" value="L2">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--gold-l);color:var(--gold);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L2</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">File tĩnh</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Excel / Word gửi email hoặc in ấn</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-blue" style="width:100%;">
+                <input type="radio" name="sx_maturity" value="L3">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L3</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Dashboard số hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Google Sheet / phần mềm, nhập thủ công</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-green" style="width:100%;">
+                <input type="radio" name="sx_maturity" value="L4">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--green-l);color:var(--green);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L4</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Tự động hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Hệ thống tự thu thập, gửi, cảnh báo</span></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Loại & hình thức báo cáo đang thực hiện <span class="lbl-hint">(chọn tất cả áp dụng)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="daily_verbal"><span class="chip">Hàng ngày — báo miệng</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="daily_paper"><span class="chip">Hàng ngày — giấy tờ</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="daily_file"><span class="chip">Hàng ngày — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="weekly_paper"><span class="chip">Hàng tuần — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="weekly_file"><span class="chip">Hàng tuần — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="monthly_paper"><span class="chip">Hàng tháng — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="monthly_file"><span class="chip">Hàng tháng — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="sx_rpt" value="monthly_dash"><span class="chip">Hàng tháng — dashboard</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_rpt" value="adhoc"><span class="chip">Đột xuất khi có vấn đề</span></label>
+            </div>
+          </div>
+
+          <div class="form-grid g2" style="margin-bottom:14px;">
+            <div class="field">
+              <label>Thời gian TB để làm 1 báo cáo <span class="lbl-hint">(ước tính)</span></label>
+              <div class="unit-wrap">
+                <input type="number" id="sx_rpt_time" min="0" placeholder="0">
+                <span class="unit-tag">phút</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Số người tham gia làm báo cáo</label>
+              <div class="unit-wrap">
+                <input type="number" id="sx_rpt_people" min="0" placeholder="0">
+                <span class="unit-tag">người</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px;">
+            <label>Điểm đau lớn nhất trong quy trình báo cáo hiện tại <span class="lbl-hint">(chọn tất cả)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_pain" value="time"><span class="chip">Tốn quá nhiều thời gian</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_pain" value="error"><span class="chip">Dễ sai / nhầm số liệu</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_pain" value="delayed"><span class="chip">GĐ nhận thông tin trễ</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_pain" value="no_std"><span class="chip">Không có mẫu thống nhất</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_pain" value="no_hist"><span class="chip">Không lưu lịch sử so sánh</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="sx_pain" value="silo"><span class="chip">Dữ liệu bị cô lập giữa bộ phận</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nếu có hệ thống tự động, muốn tự động hoá việc gì trước nhất?</label>
+            <textarea id="sx_rpt_auto" rows="2" placeholder="VD: Tự động tổng hợp sản lượng cuối ca và gửi email cho GĐ, cảnh báo khi tồn kho dưới ngưỡng..."></textarea>
+          </div>
+
+        </div>
+      </div>
+
+
+    <!-- Năng lực sản xuất -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-title">Năng lực & sản lượng hiện tại</div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field">
+            <label>Số ca sản xuất / ngày</label>
+            <div class="chips">
+              <label class="chip-lbl"><input type="radio" name="sx_ca" value="1"><span class="chip">1 ca</span></label>
+              <label class="chip-lbl"><input type="radio" name="sx_ca" value="2"><span class="chip">2 ca</span></label>
+              <label class="chip-lbl"><input type="radio" name="sx_ca" value="3"><span class="chip">3 ca</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Tổng nhân công sản xuất</label>
+            <div class="unit-wrap">
+              <input type="number" id="sx_workers" min="0" placeholder="0">
+              <span class="unit-tag">người</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Công suất thiết kế / ngày</label>
+            <div class="unit-wrap">
+              <input type="number" id="sx_cap_design" min="0" placeholder="0">
+              <span class="unit-tag">đơn vị</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid g3">
+          <div class="field">
+            <label>Sản lượng thực tế trung bình / ngày</label>
+            <div class="unit-wrap">
+              <input type="number" id="sx_cap_actual" min="0" placeholder="0">
+              <span class="unit-tag">đơn vị</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Tỷ lệ hàng lỗi / tháng <span class="lbl-hint">(ước tính)</span></label>
+            <div class="unit-wrap">
+              <input type="number" id="sx_reject" min="0" max="100" step="0.1" placeholder="0.0">
+              <span class="unit-tag">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Dây chuyền đang vận hành</label>
+            <div class="unit-wrap">
+              <input type="number" id="sx_lines" min="0" placeholder="0">
+              <span class="unit-tag">dây chuyền</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Đánh giá quy trình -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-title">Đánh giá quy trình & năng lực</div>
+        <div class="card-head-count">Tự đánh giá 1–5</div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <div class="score-grid">
+          <div class="sg-header">Tiêu chí</div>
+          <div class="sg-header">1</div>
+          <div class="sg-header">2</div>
+          <div class="sg-header">3</div>
+          <div class="sg-header">4</div>
+          <div class="sg-header">5</div>
+          <!-- rows -->
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Mức độ chuẩn hóa SOP / quy trình</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s1" value="1"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s1" value="2"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s1" value="3"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s1" value="4"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s1" value="5"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Tính ổn định của dây chuyền</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s2" value="1"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s2" value="2"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s2" value="3"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s2" value="4"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s2" value="5"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Khả năng linh hoạt đổi sản phẩm</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s3" value="1"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s3" value="2"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s3" value="3"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s3" value="4"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s3" value="5"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Năng lực tay nghề công nhân</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s4" value="1"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s4" value="2"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s4" value="3"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s4" value="4"></div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="sx_s4" value="5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Vấn đề tồn đọng & kiến nghị</div></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Vấn đề lớn nhất hiện tại của phòng sản xuất</label>
+            <textarea id="sx_issues" rows="3" placeholder="Mô tả cụ thể các điểm nghẽn, khó khăn thường xuyên..."></textarea>
+          </div>
+          <div class="field">
+            <label>Kiến nghị cải tiến (ưu tiên cao nhất)</label>
+            <textarea id="sx_suggest" rows="3" placeholder="Đề xuất giải pháp, đầu tư thiết bị, đào tạo nhân sự..."></textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label>Kế hoạch tăng sản lượng trong 6 tháng tới?</label>
+          <div class="chips">
+            <label class="chip-lbl c-green"><input type="radio" name="sx_growth" value="co"><span class="chip">Có kế hoạch cụ thể</span></label>
+            <label class="chip-lbl"><input type="radio" name="sx_growth" value="dang_xay"><span class="chip">Đang xây dựng</span></label>
+            <label class="chip-lbl c-red"><input type="radio" name="sx_growth" value="chua"><span class="chip">Chưa có</span></label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- Vấn đề & kiến nghị -->
+
+  </div>
+
+  <!-- ══ TAB 1: QC/QA ══ -->
+  <div class="dept-section" id="dept1">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-label">Phòng 02 — Chất Lượng QC / QA</div>
+        <div class="section-title">Thực trạng kiểm soát chất lượng</div>
+      </div>
+      <span class="section-badge" style="background:var(--green-l);color:var(--green);">Quality</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Thông tin người khai báo</div></div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field"><label>Họ và tên <span class="req">*</span></label><input type="text" id="qc_name" placeholder="Trưởng QC/QA"></div>
+          <div class="field"><label>Số nhân sự QC hiện tại</label><div class="unit-wrap"><input type="number" id="qc_staff" min="0" placeholder="0"><span class="unit-tag">người</span></div></div>
+          <div class="field"><label>Chứng chỉ / hệ thống áp dụng</label>
+            <div class="chips">
+              <label class="chip-lbl"><input type="checkbox" name="qc_cert" value="iso22000"><span class="chip">ISO 22000</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_cert" value="haccp"><span class="chip">HACCP</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_cert" value="gmp"><span class="chip">GMP</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_cert" value="fssc"><span class="chip">FSSC 22000</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-title">Hệ thống báo cáo hiện tại — Report Maturity</div>
+          <div class="card-head-count">Lộ trình tự động hoá</div>
+        </div>
+        <div class="card-body">
+
+          <div class="callout warn" style="margin-bottom:16px;">
+            <span class="callout-icon">&#9889;</span>
+            <div>Nhằm khảo sát thực tế và ưu tiên cải tiến.</div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Mức độ trưởng thành báo cáo hiện tại <span class="req">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+              <label class="chip-lbl c-red" style="width:100%;">
+                <input type="radio" name="qc_maturity" value="L1">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L1</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Thủ công / Giấy tờ</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Sổ sách, biểu mẫu giấy, họp miệng</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl" style="width:100%;">
+                <input type="radio" name="qc_maturity" value="L2">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--gold-l);color:var(--gold);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L2</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">File tĩnh</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Excel / Word gửi email hoặc in ấn</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-blue" style="width:100%;">
+                <input type="radio" name="qc_maturity" value="L3">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L3</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Dashboard số hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Google Sheet / phần mềm, nhập thủ công</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-green" style="width:100%;">
+                <input type="radio" name="qc_maturity" value="L4">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--green-l);color:var(--green);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L4</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Tự động hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Hệ thống tự thu thập, gửi, cảnh báo</span></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Loại & hình thức báo cáo đang thực hiện <span class="lbl-hint">(chọn tất cả áp dụng)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="daily_verbal"><span class="chip">Hàng ngày — báo miệng</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="daily_paper"><span class="chip">Hàng ngày — giấy tờ</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="daily_file"><span class="chip">Hàng ngày — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="weekly_paper"><span class="chip">Hàng tuần — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="weekly_file"><span class="chip">Hàng tuần — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="monthly_paper"><span class="chip">Hàng tháng — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="monthly_file"><span class="chip">Hàng tháng — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="qc_rpt" value="monthly_dash"><span class="chip">Hàng tháng — dashboard</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_rpt" value="adhoc"><span class="chip">Đột xuất khi có vấn đề</span></label>
+            </div>
+          </div>
+
+          <div class="form-grid g2" style="margin-bottom:14px;">
+            <div class="field">
+              <label>Thời gian TB để làm 1 báo cáo <span class="lbl-hint">(ước tính)</span></label>
+              <div class="unit-wrap">
+                <input type="number" id="qc_rpt_time" min="0" placeholder="0">
+                <span class="unit-tag">phút</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Số người tham gia làm báo cáo</label>
+              <div class="unit-wrap">
+                <input type="number" id="qc_rpt_people" min="0" placeholder="0">
+                <span class="unit-tag">người</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px;">
+            <label>Điểm đau lớn nhất trong quy trình báo cáo hiện tại <span class="lbl-hint">(chọn tất cả)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_pain" value="time"><span class="chip">Tốn quá nhiều thời gian</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_pain" value="error"><span class="chip">Dễ sai / nhầm số liệu</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_pain" value="delayed"><span class="chip">GĐ nhận thông tin trễ</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_pain" value="no_std"><span class="chip">Không có mẫu thống nhất</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_pain" value="no_hist"><span class="chip">Không lưu lịch sử so sánh</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="qc_pain" value="silo"><span class="chip">Dữ liệu bị cô lập giữa bộ phận</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nếu có hệ thống tự động, muốn tự động hoá việc gì trước nhất?</label>
+            <textarea id="qc_rpt_auto" rows="2" placeholder="VD: Tự động tổng hợp sản lượng cuối ca và gửi email cho GĐ, cảnh báo khi tồn kho dưới ngưỡng..."></textarea>
+          </div>
+
+        </div>
+      </div>
+
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Điểm kiểm soát CCP & quy trình</div></div>
+      <div class="card-body">
+        <div class="form-grid g2">
+          <div class="field">
+            <label>Số điểm kiểm soát tới hạn (CCP) hiện tại</label>
+            <div class="unit-wrap"><input type="number" id="qc_ccp" min="0" placeholder="0"><span class="unit-tag">CCP</span></div>
+          </div>
+          <div class="field">
+            <label>Tần suất kiểm tra chất lượng đầu ra</label>
+            <select id="qc_freq">
+              <option>-- Chọn --</option>
+              <option>Mỗi lô sản xuất</option>
+              <option>Theo ca (3 lần/ngày)</option>
+              <option>Hằng ngày (1 lần)</option>
+              <option>Ngẫu nhiên</option>
+              <option>Chưa có quy trình cố định</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid g2">
+          <div class="field">
+            <label>Số NCR phát sinh trung bình / tháng</label>
+            <div class="unit-wrap"><input type="number" id="qc_ncr" min="0" placeholder="0"><span class="unit-tag">NCR</span></div>
+          </div>
+          <div class="field">
+            <label>Tỷ lệ NCR được xử lý trong 24h</label>
+            <div class="unit-wrap"><input type="number" id="qc_ncr_resolve" min="0" max="100" step="1" placeholder="0"><span class="unit-tag">%</span></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Phòng lab / thiết bị kiểm nghiệm hiện có</label>
+          <div class="chips" style="margin-top:4px;">
+            <label class="chip-lbl"><input type="checkbox" name="qc_lab" value="lab_inhouse"><span class="chip">Lab nội bộ</span></label>
+            <label class="chip-lbl"><input type="checkbox" name="qc_lab" value="outsource"><span class="chip">Thuê ngoài</span></label>
+            <label class="chip-lbl"><input type="checkbox" name="qc_lab" value="micro"><span class="chip">Vi sinh</span></label>
+            <label class="chip-lbl"><input type="checkbox" name="qc_lab" value="hoa_ly"><span class="chip">Hóa lý</span></label>
+            <label class="chip-lbl"><input type="checkbox" name="qc_lab" value="cam_quan"><span class="chip">Cảm quan</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Đánh giá năng lực QC</div><div class="card-head-count">1–5</div></div>
+      <div class="card-body" style="padding:0;">
+        <div class="score-grid">
+          <div class="sg-header">Tiêu chí</div>
+          <div class="sg-header">1</div><div class="sg-header">2</div><div class="sg-header">3</div><div class="sg-header">4</div><div class="sg-header">5</div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Hệ thống tài liệu / hồ sơ chất lượng</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="qc_s1" value="1"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s1" value="2"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s1" value="3"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s1" value="4"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s1" value="5"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Năng lực kiểm nghiệm nội bộ</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="qc_s2" value="1"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s2" value="2"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s2" value="3"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s2" value="4"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s2" value="5"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Quy trình xử lý sản phẩm không đạt</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="qc_s3" value="1"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s3" value="2"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s3" value="3"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s3" value="4"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s3" value="5"></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label" style="padding:10px 20px;">Truy xuất nguồn gốc / lô sản phẩm</div>
+            <div class="score-cell"><input type="radio" class="score-radio" name="qc_s4" value="1"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s4" value="2"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s4" value="3"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s4" value="4"></div><div class="score-cell"><input type="radio" class="score-radio" name="qc_s4" value="5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Rủi ro & khoảng trống chất lượng</div></div>
+      <div class="card-body">
+        <div class="form-grid g2">
+          <div class="field"><label>Rủi ro chất lượng lớn nhất</label><textarea rows="3" id="qc_risk" placeholder="Điểm yếu cần cải thiện gấp..."></textarea></div>
+          <div class="field"><label>Kế hoạch nâng cấp hệ thống QC</label><textarea rows="3" id="qc_plan" placeholder="Chứng nhận mới, thiết bị cần bổ sung..."></textarea></div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- ══ TAB 2: KHO ══ -->
+  <div class="dept-section" id="dept2">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-label">Phòng 03 — Kho & Logistics</div>
+        <div class="section-title">Thực trạng kho và chuỗi cung ứng</div>
+      </div>
+      <span class="section-badge" style="background:var(--blue-l);color:var(--blue);">Warehouse</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Thông tin người khai báo & năng lực kho</div></div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field"><label>Họ và tên <span class="req">*</span></label><input type="text" id="kho_name" placeholder="Trưởng kho"></div>
+          <div class="field"><label>Diện tích kho tổng</label><div class="unit-wrap"><input type="number" id="kho_area" min="0" placeholder="0"><span class="unit-tag">m²</span></div></div>
+          <div class="field"><label>Số nhân sự kho</label><div class="unit-wrap"><input type="number" id="kho_staff" min="0" placeholder="0"><span class="unit-tag">người</span></div></div>
+        </div>
+        <div class="form-grid g3">
+          <div class="field">
+            <label>Loại kho hiện có</label>
+            <div class="chips">
+              <label class="chip-lbl"><input type="checkbox" name="kho_type" value="thuong"><span class="chip">Thường</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_type" value="lanh"><span class="chip">Lạnh</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_type" value="dong_lanh"><span class="chip">Đông lạnh</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_type" value="nguyen_lieu"><span class="chip">NVL riêng</span></label>
+            </div>
+          </div>
+          <div class="field"><label>Công suất kho lạnh</label><div class="unit-wrap"><input type="number" id="kho_cold_cap" min="0" placeholder="0"><span class="unit-tag">tấn</span></div></div>
+          <div class="field"><label>Tỷ lệ sử dụng kho hiện tại</label><div class="unit-wrap"><input type="number" id="kho_util" min="0" max="100" step="1" placeholder="0"><span class="unit-tag">%</span></div></div>
+        </div>
+      </div>
+    </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-title">Hệ thống báo cáo hiện tại — Report Maturity</div>
+          <div class="card-head-count">Lộ trình tự động hoá</div>
+        </div>
+        <div class="card-body">
+
+          <div class="callout warn" style="margin-bottom:16px;">
+            <span class="callout-icon">&#9889;</span>
+            <div>Nhằm khảo sát thực tế và ưu tiên cải tiến.</div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Mức độ trưởng thành báo cáo hiện tại <span class="req">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+              <label class="chip-lbl c-red" style="width:100%;">
+                <input type="radio" name="kho_maturity" value="L1">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L1</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Thủ công / Giấy tờ</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Sổ sách, biểu mẫu giấy, họp miệng</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl" style="width:100%;">
+                <input type="radio" name="kho_maturity" value="L2">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--gold-l);color:var(--gold);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L2</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">File tĩnh</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Excel / Word gửi email hoặc in ấn</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-blue" style="width:100%;">
+                <input type="radio" name="kho_maturity" value="L3">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L3</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Dashboard số hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Google Sheet / phần mềm, nhập thủ công</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-green" style="width:100%;">
+                <input type="radio" name="kho_maturity" value="L4">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--green-l);color:var(--green);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L4</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Tự động hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Hệ thống tự thu thập, gửi, cảnh báo</span></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Loại & hình thức báo cáo đang thực hiện <span class="lbl-hint">(chọn tất cả áp dụng)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="daily_verbal"><span class="chip">Hàng ngày — báo miệng</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="daily_paper"><span class="chip">Hàng ngày — giấy tờ</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="daily_file"><span class="chip">Hàng ngày — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="weekly_paper"><span class="chip">Hàng tuần — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="weekly_file"><span class="chip">Hàng tuần — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="monthly_paper"><span class="chip">Hàng tháng — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="monthly_file"><span class="chip">Hàng tháng — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kho_rpt" value="monthly_dash"><span class="chip">Hàng tháng — dashboard</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_rpt" value="adhoc"><span class="chip">Đột xuất khi có vấn đề</span></label>
+            </div>
+          </div>
+
+          <div class="form-grid g2" style="margin-bottom:14px;">
+            <div class="field">
+              <label>Thời gian TB để làm 1 báo cáo <span class="lbl-hint">(ước tính)</span></label>
+              <div class="unit-wrap">
+                <input type="number" id="kho_rpt_time" min="0" placeholder="0">
+                <span class="unit-tag">phút</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Số người tham gia làm báo cáo</label>
+              <div class="unit-wrap">
+                <input type="number" id="kho_rpt_people" min="0" placeholder="0">
+                <span class="unit-tag">người</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px;">
+            <label>Điểm đau lớn nhất trong quy trình báo cáo hiện tại <span class="lbl-hint">(chọn tất cả)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_pain" value="time"><span class="chip">Tốn quá nhiều thời gian</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_pain" value="error"><span class="chip">Dễ sai / nhầm số liệu</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_pain" value="delayed"><span class="chip">GĐ nhận thông tin trễ</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_pain" value="no_std"><span class="chip">Không có mẫu thống nhất</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_pain" value="no_hist"><span class="chip">Không lưu lịch sử so sánh</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kho_pain" value="silo"><span class="chip">Dữ liệu bị cô lập giữa bộ phận</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nếu có hệ thống tự động, muốn tự động hoá việc gì trước nhất?</label>
+            <textarea id="kho_rpt_auto" rows="2" placeholder="VD: Tự động tổng hợp sản lượng cuối ca và gửi email cho GĐ, cảnh báo khi tồn kho dưới ngưỡng..."></textarea>
+          </div>
+
+        </div>
+      </div>
+
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Vận hành & phần mềm quản lý</div></div>
+      <div class="card-body">
+        <div class="form-grid g2">
+          <div class="field">
+            <label>Hệ thống quản lý kho (WMS)</label>
+            <div class="chips">
+              <label class="chip-lbl c-green"><input type="radio" name="kho_wms" value="co_pm"><span class="chip">Có phần mềm</span></label>
+              <label class="chip-lbl"><input type="radio" name="kho_wms" value="excel"><span class="chip">Excel thủ công</span></label>
+              <label class="chip-lbl c-red"><input type="radio" name="kho_wms" value="so_tay"><span class="chip">Sổ tay</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Phương pháp quản lý tồn kho</label>
+            <div class="chips">
+              <label class="chip-lbl"><input type="radio" name="kho_method" value="fifo"><span class="chip">FIFO</span></label>
+              <label class="chip-lbl"><input type="radio" name="kho_method" value="fefo"><span class="chip">FEFO</span></label>
+              <label class="chip-lbl"><input type="radio" name="kho_method" value="khac"><span class="chip">Khác</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid g3">
+          <div class="field"><label>Số lượt xuất hàng / ngày (TB)</label><div class="unit-wrap"><input type="number" id="kho_delivery" min="0" placeholder="0"><span class="unit-tag">lô</span></div></div>
+          <div class="field"><label>Tỷ lệ giao hàng đúng hạn</label><div class="unit-wrap"><input type="number" id="kho_ontime" min="0" max="100" step="1" placeholder="0"><span class="unit-tag">%</span></div></div>
+          <div class="field"><label>Số lần thiếu hàng / tháng (stockout)</label><div class="unit-wrap"><input type="number" id="kho_stockout" min="0" placeholder="0"><span class="unit-tag">lần</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Thách thức & nhu cầu đầu tư</div></div>
+      <div class="card-body">
+        <div class="form-grid g2">
+          <div class="field"><label>Vấn đề tồn đọng lớn nhất</label><textarea rows="3" id="kho_issues" placeholder="Hết chỗ, thiếu xe nâng, nhiệt độ không ổn định..."></textarea></div>
+          <div class="field"><label>Nhu cầu đầu tư / cải tiến</label><textarea rows="3" id="kho_invest" placeholder="Mở rộng kho lạnh, phần mềm WMS, thiết bị đo nhiệt độ..."></textarea></div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- ══ TAB 3: KẾ HOẠCH ══ -->
+  <div class="dept-section" id="dept3">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-label">Phòng 04 — Kế Hoạch & Vật Tư</div>
+        <div class="section-title">Thực trạng lập kế hoạch & chuỗi cung ứng NVL</div>
+      </div>
+      <span class="section-badge" style="background:var(--purple-l);color:var(--purple);">Planning</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Thông tin người khai báo & quy trình lập kế hoạch</div></div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field"><label>Họ và tên <span class="req">*</span></label><input type="text" id="kh_name" placeholder="Trưởng kế hoạch"></div>
+          <div class="field"><label>Số nhân sự phòng</label><div class="unit-wrap"><input type="number" id="kh_staff" min="0" placeholder="0"><span class="unit-tag">người</span></div></div>
+          <div class="field">
+            <label>Chu kỳ lập kế hoạch sản xuất</label>
+            <select id="kh_cycle">
+              <option>-- Chọn --</option>
+              <option>Hàng ngày</option>
+              <option>Hàng tuần</option>
+              <option>Hàng tháng</option>
+              <option>Theo đơn hàng</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid g2">
+          <div class="field">
+            <label>Công cụ lập kế hoạch đang dùng</label>
+            <div class="chips">
+              <label class="chip-lbl"><input type="checkbox" name="kh_tool" value="erp"><span class="chip">ERP</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_tool" value="excel"><span class="chip">Excel</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_tool" value="mrp"><span class="chip">MRP</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_tool" value="thu_cong"><span class="chip">Thủ công</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Độ chính xác kế hoạch / thực tế</label>
+            <div class="unit-wrap"><input type="number" id="kh_accuracy" min="0" max="100" step="1" placeholder="0"><span class="unit-tag">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-title">Hệ thống báo cáo hiện tại — Report Maturity</div>
+          <div class="card-head-count">Lộ trình tự động hoá</div>
+        </div>
+        <div class="card-body">
+
+          <div class="callout warn" style="margin-bottom:16px;">
+            <span class="callout-icon">&#9889;</span>
+            <div>Nhằm khảo sát thực tế và ưu tiên cải tiến.</div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Mức độ trưởng thành báo cáo hiện tại <span class="req">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+              <label class="chip-lbl c-red" style="width:100%;">
+                <input type="radio" name="kh_maturity" value="L1">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L1</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Thủ công / Giấy tờ</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Sổ sách, biểu mẫu giấy, họp miệng</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl" style="width:100%;">
+                <input type="radio" name="kh_maturity" value="L2">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--gold-l);color:var(--gold);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L2</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">File tĩnh</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Excel / Word gửi email hoặc in ấn</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-blue" style="width:100%;">
+                <input type="radio" name="kh_maturity" value="L3">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L3</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Dashboard số hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Google Sheet / phần mềm, nhập thủ công</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-green" style="width:100%;">
+                <input type="radio" name="kh_maturity" value="L4">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--green-l);color:var(--green);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L4</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Tự động hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Hệ thống tự thu thập, gửi, cảnh báo</span></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Loại & hình thức báo cáo đang thực hiện <span class="lbl-hint">(chọn tất cả áp dụng)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="daily_verbal"><span class="chip">Hàng ngày — báo miệng</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="daily_paper"><span class="chip">Hàng ngày — giấy tờ</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="daily_file"><span class="chip">Hàng ngày — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="weekly_paper"><span class="chip">Hàng tuần — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="weekly_file"><span class="chip">Hàng tuần — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="monthly_paper"><span class="chip">Hàng tháng — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="monthly_file"><span class="chip">Hàng tháng — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="kh_rpt" value="monthly_dash"><span class="chip">Hàng tháng — dashboard</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_rpt" value="adhoc"><span class="chip">Đột xuất khi có vấn đề</span></label>
+            </div>
+          </div>
+
+          <div class="form-grid g2" style="margin-bottom:14px;">
+            <div class="field">
+              <label>Thời gian TB để làm 1 báo cáo <span class="lbl-hint">(ước tính)</span></label>
+              <div class="unit-wrap">
+                <input type="number" id="kh_rpt_time" min="0" placeholder="0">
+                <span class="unit-tag">phút</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Số người tham gia làm báo cáo</label>
+              <div class="unit-wrap">
+                <input type="number" id="kh_rpt_people" min="0" placeholder="0">
+                <span class="unit-tag">người</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px;">
+            <label>Điểm đau lớn nhất trong quy trình báo cáo hiện tại <span class="lbl-hint">(chọn tất cả)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_pain" value="time"><span class="chip">Tốn quá nhiều thời gian</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_pain" value="error"><span class="chip">Dễ sai / nhầm số liệu</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_pain" value="delayed"><span class="chip">GĐ nhận thông tin trễ</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_pain" value="no_std"><span class="chip">Không có mẫu thống nhất</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_pain" value="no_hist"><span class="chip">Không lưu lịch sử so sánh</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="kh_pain" value="silo"><span class="chip">Dữ liệu bị cô lập giữa bộ phận</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nếu có hệ thống tự động, muốn tự động hoá việc gì trước nhất?</label>
+            <textarea id="kh_rpt_auto" rows="2" placeholder="VD: Tự động tổng hợp sản lượng cuối ca và gửi email cho GĐ, cảnh báo khi tồn kho dưới ngưỡng..."></textarea>
+          </div>
+
+        </div>
+      </div>
+
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Quản lý nguyên vật liệu & nhà cung cấp</div></div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field"><label>Số nhà cung cấp NVL chính</label><div class="unit-wrap"><input type="number" id="kh_suppliers" min="0" placeholder="0"><span class="unit-tag">NCC</span></div></div>
+          <div class="field"><label>Lead time NVL quan trọng nhất</label><div class="unit-wrap"><input type="number" id="kh_leadtime" min="0" placeholder="0"><span class="unit-tag">ngày</span></div></div>
+          <div class="field"><label>Số lần thiếu NVL gây dừng SX / quý</label><div class="unit-wrap"><input type="number" id="kh_shortage" min="0" placeholder="0"><span class="unit-tag">lần</span></div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;">Nguyên vật liệu chiến lược (rủi ro cung ứng cao)</div>
+        <table class="data-table" id="kh_nvl_table">
+          <thead>
+            <tr>
+              <th>Tên NVL</th>
+              <th style="width:130px">Nhà cung cấp chính</th>
+              <th style="width:100px">Tồn kho tối thiểu</th>
+              <th style="width:100px">Rủi ro cung ứng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" value="Tổ yến thô đảo"></td>
+              <td><input type="text" value="" placeholder="Tên NCC"></td>
+              <td><div class="unit-wrap"><input type="number" min="0" placeholder="0" style="padding-right:36px"><span class="unit-tag">kg</span></div></td>
+              <td><select><option>Cao</option><option>Trung bình</option><option>Thấp</option></select></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="Hũ thủy tinh 70ml"></td>
+              <td><input type="text" value="" placeholder="Tên NCC"></td>
+              <td><div class="unit-wrap"><input type="number" min="0" placeholder="0" style="padding-right:42px"><span class="unit-tag">cái</span></div></td>
+              <td><select><option>Trung bình</option><option>Cao</option><option>Thấp</option></select></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="Bao bì / nhãn mác"></td>
+              <td><input type="text" value="" placeholder="Tên NCC"></td>
+              <td><div class="unit-wrap"><input type="number" min="0" placeholder="0" style="padding-right:42px"><span class="unit-tag">bộ</span></div></td>
+              <td><select><option>Thấp</option><option>Cao</option><option>Trung bình</option></select></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-btn" onclick="addNvlRow()">+ Thêm nguyên vật liệu</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Điểm nghẽn & ưu tiên cải tiến</div></div>
+      <div class="card-body">
+        <div class="form-grid g2">
+          <div class="field"><label>Thách thức lập kế hoạch lớn nhất</label><textarea rows="3" id="kh_issues" placeholder="Thông tin bán hàng không đủ sớm, NVL giao trễ..."></textarea></div>
+          <div class="field"><label>Kiến nghị cải tiến hệ thống</label><textarea rows="3" id="kh_suggest" placeholder="Triển khai MRP, chuẩn hóa dữ liệu tồn kho..."></textarea></div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- ══ TAB 4: BẢO TRÌ ══ -->
+  <div class="dept-section" id="dept4">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-label">Phòng 05 — Bảo Trì & Kỹ Thuật</div>
+        <div class="section-title">Thực trạng bảo trì thiết bị nhà máy</div>
+      </div>
+      <span class="section-badge" style="background:var(--orange-l);color:var(--orange);">Maintenance</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Thông tin người khai báo & đội ngũ</div></div>
+      <div class="card-body">
+        <div class="form-grid g3">
+          <div class="field"><label>Họ và tên <span class="req">*</span></label><input type="text" id="bt_name" placeholder="Trưởng bảo trì"></div>
+          <div class="field"><label>Số kỹ thuật viên bảo trì</label><div class="unit-wrap"><input type="number" id="bt_staff" min="0" placeholder="0"><span class="unit-tag">người</span></div></div>
+          <div class="field">
+            <label>Chiến lược bảo trì hiện tại</label>
+            <div class="chips">
+              <label class="chip-lbl c-green"><input type="radio" name="bt_strategy" value="pm"><span class="chip">Phòng ngừa (PM)</span></label>
+              <label class="chip-lbl"><input type="radio" name="bt_strategy" value="cbm"><span class="chip">Dự đoán (CBM)</span></label>
+              <label class="chip-lbl c-red"><input type="radio" name="bt_strategy" value="bm"><span class="chip">Sự cố (BM)</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-title">Hệ thống báo cáo hiện tại — Report Maturity</div>
+          <div class="card-head-count">Lộ trình tự động hoá</div>
+        </div>
+        <div class="card-body">
+
+          <div class="callout warn" style="margin-bottom:16px;">
+            <span class="callout-icon">&#9889;</span>
+            <div>Nhằm khảo sát thực tế và ưu tiên cải tiến.</div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Mức độ trưởng thành báo cáo hiện tại <span class="req">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+              <label class="chip-lbl c-red" style="width:100%;">
+                <input type="radio" name="bt_maturity" value="L1">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L1</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Thủ công / Giấy tờ</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Sổ sách, biểu mẫu giấy, họp miệng</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl" style="width:100%;">
+                <input type="radio" name="bt_maturity" value="L2">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--gold-l);color:var(--gold);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L2</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">File tĩnh</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Excel / Word gửi email hoặc in ấn</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-blue" style="width:100%;">
+                <input type="radio" name="bt_maturity" value="L3">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L3</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Dashboard số hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Google Sheet / phần mềm, nhập thủ công</span></span>
+                </span>
+              </label>
+              <label class="chip-lbl c-green" style="width:100%;">
+                <input type="radio" name="bt_maturity" value="L4">
+                <span class="chip" style="width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;height:auto;border-radius:6px;align-items:flex-start;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;background:var(--green-l);color:var(--green);padding:2px 8px;border-radius:10px;margin-top:1px;flex-shrink:0;">L4</span>
+                  <span><strong style="display:block;font-size:12px;margin-bottom:2px;">Tự động hoá</strong><span style="font-size:11px;font-weight:400;color:var(--ink3);">Hệ thống tự thu thập, gửi, cảnh báo</span></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label>Loại & hình thức báo cáo đang thực hiện <span class="lbl-hint">(chọn tất cả áp dụng)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="daily_verbal"><span class="chip">Hàng ngày — báo miệng</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="daily_paper"><span class="chip">Hàng ngày — giấy tờ</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="daily_file"><span class="chip">Hàng ngày — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="weekly_paper"><span class="chip">Hàng tuần — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="weekly_file"><span class="chip">Hàng tuần — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="monthly_paper"><span class="chip">Hàng tháng — giấy / in</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="monthly_file"><span class="chip">Hàng tháng — file mềm</span></label>
+              <label class="chip-lbl"><input type="checkbox" name="bt_rpt" value="monthly_dash"><span class="chip">Hàng tháng — dashboard</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_rpt" value="adhoc"><span class="chip">Đột xuất khi có vấn đề</span></label>
+            </div>
+          </div>
+
+          <div class="form-grid g2" style="margin-bottom:14px;">
+            <div class="field">
+              <label>Thời gian TB để làm 1 báo cáo <span class="lbl-hint">(ước tính)</span></label>
+              <div class="unit-wrap">
+                <input type="number" id="bt_rpt_time" min="0" placeholder="0">
+                <span class="unit-tag">phút</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Số người tham gia làm báo cáo</label>
+              <div class="unit-wrap">
+                <input type="number" id="bt_rpt_people" min="0" placeholder="0">
+                <span class="unit-tag">người</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px;">
+            <label>Điểm đau lớn nhất trong quy trình báo cáo hiện tại <span class="lbl-hint">(chọn tất cả)</span></label>
+            <div class="chips" style="margin-top:6px;">
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_pain" value="time"><span class="chip">Tốn quá nhiều thời gian</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_pain" value="error"><span class="chip">Dễ sai / nhầm số liệu</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_pain" value="delayed"><span class="chip">GĐ nhận thông tin trễ</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_pain" value="no_std"><span class="chip">Không có mẫu thống nhất</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_pain" value="no_hist"><span class="chip">Không lưu lịch sử so sánh</span></label>
+              <label class="chip-lbl c-red"><input type="checkbox" name="bt_pain" value="silo"><span class="chip">Dữ liệu bị cô lập giữa bộ phận</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nếu có hệ thống tự động, muốn tự động hoá việc gì trước nhất?</label>
+            <textarea id="bt_rpt_auto" rows="2" placeholder="VD: Tự động tổng hợp sản lượng cuối ca và gửi email cho GĐ, cảnh báo khi tồn kho dưới ngưỡng..."></textarea>
+          </div>
+
+        </div>
+      </div>
+
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Chỉ số hiệu quả thiết bị (OEE)</div></div>
+      <div class="card-body">
+        <div class="callout info">
+          <span class="callout-icon">ℹ</span>
+          <div><strong>OEE = Tính sẵn sàng × Hiệu suất × Chất lượng</strong>Chuẩn ngành thực phẩm: OEE ≥ 65% là ổn định. ≥ 80% là tốt.</div>
+        </div>
+        <div class="form-grid g4">
+          <div class="field"><label>Tỷ lệ sẵn sàng máy (A)</label><div class="unit-wrap"><input type="number" id="bt_avail" min="0" max="100" step="0.1" placeholder="0.0"><span class="unit-tag">%</span></div></div>
+          <div class="field"><label>Hiệu suất chạy máy (P)</label><div class="unit-wrap"><input type="number" id="bt_perf" min="0" max="100" step="0.1" placeholder="0.0"><span class="unit-tag">%</span></div></div>
+          <div class="field"><label>Tỷ lệ chất lượng (Q)</label><div class="unit-wrap"><input type="number" id="bt_quality" min="0" max="100" step="0.1" placeholder="0.0"><span class="unit-tag">%</span></div></div>
+          <div class="field"><label>MTBF trung bình <span class="lbl-hint">(Thời gian giữa 2 sự cố)</span></label><div class="unit-wrap"><input type="number" id="bt_mtbf" min="0" placeholder="0"><span class="unit-tag">giờ</span></div></div>
+        </div>
+        <div class="form-grid g3">
+          <div class="field"><label>Số sự cố dừng máy / tháng</label><div class="unit-wrap"><input type="number" id="bt_breakdown" min="0" placeholder="0"><span class="unit-tag">lần</span></div></div>
+          <div class="field"><label>Thời gian dừng máy TB / sự cố</label><div class="unit-wrap"><input type="number" id="bt_downtime" min="0" placeholder="0"><span class="unit-tag">phút</span></div></div>
+          <div class="field"><label>Chi phí bảo trì / tháng (ước tính)</label><div class="unit-wrap"><input type="number" id="bt_cost" min="0" placeholder="0"><span class="unit-tag">triệu đ</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Danh sách thiết bị trọng yếu</div></div>
+      <div class="card-body">
+        <table class="data-table" id="bt_equip_table">
+          <thead>
+            <tr>
+              <th>Thiết bị</th>
+              <th style="width:100px">Năm SX</th>
+              <th style="width:110px">Tình trạng</th>
+              <th style="width:110px">Lần BT cuối</th>
+              <th style="width:110px">Cần nâng cấp?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" value="Máy chiết rót yến tự động"></td>
+              <td><input type="number" min="1990" max="2030" placeholder="2020"></td>
+              <td><select><option>Tốt</option><option>Trung bình</option><option>Cần sửa</option><option>Hỏng</option></select></td>
+              <td><input type="date"></td>
+              <td><select><option>Không</option><option>Có</option><option>Thay mới</option></select></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="Hệ thống thanh trùng"></td>
+              <td><input type="number" min="1990" max="2030" placeholder="2019"></td>
+              <td><select><option>Tốt</option><option>Trung bình</option><option>Cần sửa</option></select></td>
+              <td><input type="date"></td>
+              <td><select><option>Không</option><option>Có</option><option>Thay mới</option></select></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="Máy đóng gói & dán nhãn"></td>
+              <td><input type="number" min="1990" max="2030" placeholder="2021"></td>
+              <td><select><option>Tốt</option><option>Trung bình</option><option>Cần sửa</option></select></td>
+              <td><input type="date"></td>
+              <td><select><option>Không</option><option>Có</option><option>Thay mới</option></select></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-btn" onclick="addEquipRow()">+ Thêm thiết bị</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-head-title">Kế hoạch & nhu cầu bảo trì</div></div>
+      <div class="card-body">
+        <div class="form-grid g2">
+          <div class="field">
+            <label>Có kế hoạch bảo trì định kỳ (PM Plan)?</label>
+            <div class="toggle-row" id="bt_pm_toggle" onclick="toggleSection('bt_pm_toggle','bt_pm_detail')">
+              <div class="t-track"><div class="t-thumb"></div></div>
+              <span class="t-label">Chưa có PM Plan chính thức</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Ngân sách bảo trì có đủ?</label>
+            <div class="chips">
+              <label class="chip-lbl c-green"><input type="radio" name="bt_budget" value="du"><span class="chip">Đủ</span></label>
+              <label class="chip-lbl"><input type="radio" name="bt_budget" value="thieu_it"><span class="chip">Thiếu ít</span></label>
+              <label class="chip-lbl c-red"><input type="radio" name="bt_budget" value="thieu_nhieu"><span class="chip">Thiếu nhiều</span></label>
+            </div>
+          </div>
+        </div>
+        <div id="bt_pm_detail" style="display:none; margin-top:12px;">
+          <div class="field">
+            <label>Mô tả PM Plan đang áp dụng</label>
+            <textarea rows="3" placeholder="Tần suất bảo dưỡng, danh mục kiểm tra định kỳ..."></textarea>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="form-grid g2">
+          <div class="field"><label>Nhu cầu đào tạo kỹ thuật viên</label><textarea rows="3" id="bt_training" placeholder="Kỹ năng cần bổ sung, thiết bị mới cần huấn luyện..."></textarea></div>
+          <div class="field"><label>Đề xuất đầu tư thiết bị / nâng cấp</label><textarea rows="3" id="bt_invest" placeholder="Máy móc cần thay mới, phụ tùng cần dự phòng..."></textarea></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COMPLETION -->
+  <div class="completion" id="completionScreen">
+    <div class="completion-check">✓</div>
+    <h2>Tất cả 5 phòng ban đã gửi</h2>
+    <p>Giám đốc nhà máy đã nhận đủ báo cáo. Xuất file tổng hợp để lưu trữ.</p>
+    <div class="export-grid" style="margin-bottom:16px;">
+      <div class="export-card" onclick="exportExcel()">
+        <div class="export-card-icon">📊</div>
+        <div class="export-card-title">Xuất Excel tổng hợp</div>
+        <div class="export-card-sub">6 sheets — tổng hợp + 5 phòng ban</div>
+      </div>
+      <div class="export-card" onclick="exportPDF()">
+        <div class="export-card-icon">📄</div>
+        <div class="export-card-title">In / Xuất PDF</div>
+        <div class="export-card-sub">Báo cáo sẵn sàng trình GĐ</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:4px;">
+      <button class="btn" style="background:var(--cream);color:var(--ink2);border:1px solid var(--rule2);" onclick="confirmReset('all')">&#8635; Xóa tất cả & khảo sát lại</button>
+      <button class="btn btn-outline" style="color:var(--ink);border-color:var(--rule2);" onclick="resetForm()">← Khảo sát mới</button>
+    </div>
+  </div>
+
+<!-- ── EmailJS CONFIG MODAL ── -->
+<div class="ejs-overlay" id="ejsOverlay" style="display:none">
+  <div class="ejs-modal">
+    <button class="ejs-close" onclick="closeConfig()">✕</button>
+    <div class="ejs-modal-title">Cấu hình nhận email báo cáo</div>
+    <p class="ejs-modal-sub">Dùng <strong>Formspree</strong> — không cần kỹ thuật. Chỉ cần 1 URL, email tự động gửi đến <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b131a12151c0e021e155519143b1c161a121755181416">[email&#160;protected]</a></strong>.</p>
+
+    <div class="ejs-step">
+      <strong style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Lấy Formspree endpoint — 2 phút</strong>
+      <ol>
+        <li>Vào <a href="https://formspree.io" target="_blank">formspree.io</a> → Sign up miễn phí</li>
+        <li>Bấm <strong>New Form</strong> → điền email: <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="157d747c7b72606c707b3b777a557278747c793b767a78">[email&#160;protected]</a></code></li>
+        <li>Copy URL endpoint dạng <code>https://formspree.io/f/xxxxxxxx</code></li>
+        <li>Dán vào ô bên dưới → Lưu → Gửi test</li>
+      </ol>
+    </div>
+
+    <div class="field">
+      <label>Formspree Endpoint URL <span class="req">*</span></label>
+      <input type="text" id="fs_endpoint_input" placeholder="https://formspree.io/f/xxxxxxxx">
+    </div>
+    <div class="field" style="margin-top:8px;">
+      <label>Email nhận kết quả</label>
+      <input type="text" value="hainguyen.bo@gmail.com" disabled style="background:var(--cream);color:var(--ink3);cursor:default;">
+    </div>
+
+    <div class="ejs-actions">
+      <button class="btn btn-gold" style="flex:1" onclick="saveConfig()">Lưu cấu hình</button>
+      <button class="btn" style="background:var(--cream);color:var(--ink2);border:1px solid var(--rule2);" onclick="testEmail()">Gửi email test</button>
+    </div>
+    <div id="configStatus" style="margin-top:12px;font-size:12px;color:var(--ink3);min-height:18px;"></div>
+  </div>
+</div>
+
+</div><!-- /body-wrap -->
+
+<!-- ACTION BAR -->
+<div class="action-bar" id="actionBar">
+  <div class="action-left">
+    <div class="autosave"><div class="dot-pulse"></div>Tự động lưu nháp</div>
+    <button class="btn btn-ghost" id="btnPrev" onclick="prevTab()" style="display:none">← Trước</button>
+    <button class="btn btn-ghost" id="btnNext" onclick="nextTab()" style="display:none">Phòng tiếp →</button>
+    <button id="btnResetTab" onclick="confirmReset('tab')" title="Chỉ hiệu lực sau khi đã gửi xong">
+      &#8635; Xóa &amp; làm lại
+    </button>
+  </div>
+  <div class="action-right">
+    <button class="btn" id="btnCheck" onclick="validateTab()">
+      &#10003; Kiểm tra
+    </button>
+    <button class="btn btn-green" id="btnSendDept" onclick="sendDept()">
+      <span id="btnSendLabel">&#10003; Xác nhận & lưu kết quả</span>
+    </button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+let currentTab = 0;
+const totalTabs = 5;
+const doneMap = {};
+
+// ── Formspree config ──────────────────────────────────────────
+const FS_ENDPOINT_KEY = 'lf_formspree_endpoint';
+let fsEndpoint = localStorage.getItem(FS_ENDPOINT_KEY) || '';
+
+function isConfigured() {
+  return fsEndpoint.length > 10;
+}
+
+function updateConfigIndicator() {
+  const dot   = document.getElementById('configDot');
+  const label = document.getElementById('configLabel');
+  if (!dot || !label) return;
+  if (isConfigured()) {
+    dot.className   = 'config-dot ready';
+    label.textContent = 'Email → hainguyen.bo@gmail.com · nhấn để chỉnh';
+  } else {
+    dot.className   = 'config-dot';
+    label.textContent = 'Chưa cấu hình gửi email — nhấn để thiết lập';
+  }
+  const sub = document.getElementById('emailCardSub');
+  if (sub) sub.textContent = isConfigured()
+    ? 'Gửi tới: hainguyen.bo@gmail.com'
+    : 'Cần cấu hình Formspree endpoint';
+}
+
+function openConfig() {
+  document.getElementById('ejsOverlay').style.display = 'flex';
+  var inp = document.getElementById('fs_endpoint_input');
+  if (inp) inp.value = fsEndpoint;
+}
+function closeConfig() {
+  document.getElementById('ejsOverlay').style.display = 'none';
+}
+
+function saveConfig() {
+  var inp = document.getElementById('fs_endpoint_input');
+  if (!inp) return;
+  var val = inp.value.trim();
+  if (!val.startsWith('https://formspree.io/f/')) {
+    document.getElementById('configStatus').innerHTML =
+      '<span style="color:var(--red)">⚠ URL phải bắt đầu bằng https://formspree.io/f/</span>';
+    return;
+  }
+  fsEndpoint = val;
+  localStorage.setItem(FS_ENDPOINT_KEY, fsEndpoint);
+  document.getElementById('configStatus').innerHTML =
+    '<span style="color:var(--green)">✓ Đã lưu. Bấm "Gửi test" để kiểm tra.</span>';
+  updateConfigIndicator();
+  setTimeout(closeConfig, 1400);
+}
+
+async function testEmail() {
+  if (!isConfigured()) {
+    document.getElementById('configStatus').innerHTML =
+      '<span style="color:var(--red)">⚠ Nhập endpoint trước.</span>';
+    return;
+  }
+  document.getElementById('configStatus').innerHTML =
+    '<span style="color:var(--blue)">⏳ Đang gửi email test…</span>';
+  try {
+    var res = await fetch(fsEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject: '[TEST] Kiểm tra cấu hình — Lifes Food Nhà Máy',
+        message:  'Email test từ Form Khảo Sát Nhà Máy Lifes Food.\nNếu bạn nhận được email này, cấu hình đã hoạt động đúng.',
+        _replyto: 'hainguyen.bo@gmail.com',
+      })
+    });
+    if (res.ok) {
+      document.getElementById('configStatus').innerHTML =
+        '<span style="color:var(--green)">✓ Gửi test thành công! Kiểm tra hộp thư hainguyen.bo@gmail.com</span>';
+    } else {
+      var d = await res.json();
+      document.getElementById('configStatus').innerHTML =
+        '<span style="color:var(--red)">✗ Lỗi: ' + (d.error || res.status) + '</span>';
+    }
+  } catch(err) {
+    document.getElementById('configStatus').innerHTML =
+      '<span style="color:var(--red)">✗ ' + err.message + '</span>';
+  }
+}
+
+function showSendStatus(type, msg) {
+  var wrap = document.getElementById('sendStatusWrap');
+  if (!wrap) return;
+  var icon = type === 'sending'
+    ? '<div class="send-spinner"></div>'
+    : (type === 'success' ? '✓' : '✗');
+  wrap.innerHTML = '<div class="send-status ' + type + '">' + icon + ' <span>' + msg + '</span></div>';
+}
+
+function buildDeptBody(deptData) {
+  var addr = 'Lô E4-E5 Đường N9, KCN Nam Thuận, Xã Mỹ Hạnh, Tỉnh Tây Ninh, Việt Nam';
+  var lines = [];
+  lines.push('BÁO CÁO KHẢO SÁT THỰC TRẠNG NHÀ MÁY');
+  lines.push('Lifes Food — ' + addr);
+  lines.push('Ngày: ' + new Date().toLocaleDateString('vi-VN') + ' lúc ' + new Date().toLocaleTimeString('vi-VN'));
+  lines.push('');
+  Object.entries(deptData).forEach(function(pair) {
+    if (pair[1]) lines.push('• ' + pair[0] + ': ' + pair[1]);
+  });
+  return lines.join('\n');
+}
+
+// sendDept — Formspree version
+function sendDept() {
+  var n = currentTab;
+  if (sendMap[n] === 'done') return;
+  // Validate trước — warn nhưng không chặn
+  validateTab();
+  // Đánh dấu done ngay — kết quả xem trên Dashboard
+  setDeptState(n, 'done');
+  // Mở dashboard tự động khi send xong để xem kết quả
+  setTimeout(function() {
+    openDashboard();
+  }, 600);
+  // Auto-advance sang phòng tiếp theo chưa điền
+  var nextPending = Object.entries(sendMap).find(function(e) {
+    return parseInt(e[0]) > n && e[1] !== 'done';
+  });
+  if (nextPending) {
+    setTimeout(function() {
+      closeDashboard();
+      goTab(parseInt(nextPending[0]));
+    }, 3000);
+  }
+}
+
+
+function resetForm() {
+  for(let i=0;i<totalTabs;i++) sendMap[i]='pending';
+  document.querySelectorAll('.dept-section').forEach(s => { s.style.display=''; s.classList.remove('active'); });
+  document.getElementById('chartDashboard').style.display='';
+  document.getElementById('actionBar').style.display='';
+  document.getElementById('completionScreen').style.display='none';
+  for(let i=0;i<totalTabs;i++) {
+    const legItem = document.getElementById('leg'+i);
+    const legStatus = document.getElementById('legStatus'+i);
+    if(legItem)   { legItem.className = 'legend-item pending'; }
+    if(legStatus) { legStatus.className = 'legend-status pending'; legStatus.textContent = 'Chờ gửi'; }
+  }
+  goTab(0);
+}
+
+// ── EXCEL EXPORT ──
+function collectData() {
+  const get = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const getRadio = name => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; };
+  const getCheckboxes = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value).join(', ');
+
+  return {
+    sx: {
+      'Người khai báo': get('sx_name'),
+      'Chức vụ': get('sx_title'),
+      'Ngày khảo sát': get('sx_date'),
+      'Số ca / ngày': getRadio('sx_ca'),
+      'Tổng nhân công': get('sx_workers'),
+      'Công suất thiết kế / ngày': get('sx_cap_design'),
+      'Sản lượng thực tế TB / ngày': get('sx_cap_actual'),
+      'Tỷ lệ hàng lỗi (%)': get('sx_reject'),
+      'Số dây chuyền vận hành': get('sx_lines'),
+      'Điểm SOP/quy trình (1-5)': getRadio('sx_s1'),
+      'Điểm ổn định dây chuyền (1-5)': getRadio('sx_s2'),
+      'Điểm linh hoạt đổi SP (1-5)': getRadio('sx_s3'),
+      'Điểm tay nghề công nhân (1-5)': getRadio('sx_s4'),
+      'Vấn đề tồn đọng': get('sx_issues'),
+      'Kiến nghị cải tiến': get('sx_suggest'),
+      'Kế hoạch tăng sản lượng': getRadio('sx_growth'),
+      '── BÁO CÁO HIỆN TẠI ──': '',
+      'Mức độ trưởng thành báo cáo (L1-L4)': getRadio('sx_maturity'),
+      'Hình thức báo cáo đang dùng': getCheckboxes('sx_rpt'),
+      'Thời gian làm 1 báo cáo (phút)': get('sx_rpt_time'),
+      'Số người làm báo cáo': get('sx_rpt_people'),
+      'Điểm đau trong báo cáo': getCheckboxes('sx_pain'),
+      'Muốn tự động hoá trước nhất': get('sx_rpt_auto'),
+    },
+    qc: {
+      'Người khai báo': get('qc_name'),
+      'Số nhân sự QC': get('qc_staff'),
+      'Chứng chỉ áp dụng': getCheckboxes('qc_cert'),
+      'Số CCP': get('qc_ccp'),
+      'Tần suất kiểm tra': get('qc_freq'),
+      'Số NCR / tháng': get('qc_ncr'),
+      'Tỷ lệ NCR xử lý trong 24h (%)': get('qc_ncr_resolve'),
+      'Thiết bị kiểm nghiệm': getCheckboxes('qc_lab'),
+      'Điểm tài liệu hồ sơ (1-5)': getRadio('qc_s1'),
+      'Điểm kiểm nghiệm nội bộ (1-5)': getRadio('qc_s2'),
+      'Điểm xử lý SP không đạt (1-5)': getRadio('qc_s3'),
+      'Điểm truy xuất nguồn gốc (1-5)': getRadio('qc_s4'),
+      'Rủi ro chất lượng': get('qc_risk'),
+      'Kế hoạch nâng cấp QC': get('qc_plan'),
+      '── BÁO CÁO HIỆN TẠI ──': '',
+      'Mức độ trưởng thành báo cáo (L1-L4)': getRadio('qc_maturity'),
+      'Hình thức báo cáo đang dùng': getCheckboxes('qc_rpt'),
+      'Thời gian làm 1 báo cáo (phút)': get('qc_rpt_time'),
+      'Số người làm báo cáo': get('qc_rpt_people'),
+      'Điểm đau trong báo cáo': getCheckboxes('qc_pain'),
+      'Muốn tự động hoá trước nhất': get('qc_rpt_auto'),
+    },
+    kho: {
+      'Người khai báo': get('kho_name'),
+      'Diện tích kho (m²)': get('kho_area'),
+      'Số nhân sự kho': get('kho_staff'),
+      'Loại kho': getCheckboxes('kho_type'),
+      'Công suất kho lạnh (tấn)': get('kho_cold_cap'),
+      'Tỷ lệ sử dụng kho (%)': get('kho_util'),
+      'Hệ thống WMS': getRadio('kho_wms'),
+      'Phương pháp tồn kho': getRadio('kho_method'),
+      'Số lô xuất / ngày': get('kho_delivery'),
+      'Tỷ lệ giao đúng hạn (%)': get('kho_ontime'),
+      'Số lần stockout / tháng': get('kho_stockout'),
+      'Vấn đề tồn đọng': get('kho_issues'),
+      'Nhu cầu đầu tư': get('kho_invest'),
+      '── BÁO CÁO HIỆN TẠI ──': '',
+      'Mức độ trưởng thành báo cáo (L1-L4)': getRadio('kho_maturity'),
+      'Hình thức báo cáo đang dùng': getCheckboxes('kho_rpt'),
+      'Thời gian làm 1 báo cáo (phút)': get('kho_rpt_time'),
+      'Số người làm báo cáo': get('kho_rpt_people'),
+      'Điểm đau trong báo cáo': getCheckboxes('kho_pain'),
+      'Muốn tự động hoá trước nhất': get('kho_rpt_auto'),
+    },
+    kh: {
+      'Người khai báo': get('kh_name'),
+      'Số nhân sự phòng': get('kh_staff'),
+      'Chu kỳ lập kế hoạch': get('kh_cycle'),
+      'Công cụ lập kế hoạch': getCheckboxes('kh_tool'),
+      'Độ chính xác KH/thực tế (%)': get('kh_accuracy'),
+      'Số nhà cung cấp chính': get('kh_suppliers'),
+      'Lead time NVL quan trọng (ngày)': get('kh_leadtime'),
+      'Số lần thiếu NVL / quý': get('kh_shortage'),
+      'Thách thức lập kế hoạch': get('kh_issues'),
+      'Kiến nghị hệ thống': get('kh_suggest'),
+      '── BÁO CÁO HIỆN TẠI ──': '',
+      'Mức độ trưởng thành báo cáo (L1-L4)': getRadio('kh_maturity'),
+      'Hình thức báo cáo đang dùng': getCheckboxes('kh_rpt'),
+      'Thời gian làm 1 báo cáo (phút)': get('kh_rpt_time'),
+      'Số người làm báo cáo': get('kh_rpt_people'),
+      'Điểm đau trong báo cáo': getCheckboxes('kh_pain'),
+      'Muốn tự động hoá trước nhất': get('kh_rpt_auto'),
+    },
+    bt: {
+      'Người khai báo': get('bt_name'),
+      'Số KTV bảo trì': get('bt_staff'),
+      'Chiến lược bảo trì': getRadio('bt_strategy'),
+      'Tỷ lệ sẵn sàng máy A (%)': get('bt_avail'),
+      'Hiệu suất chạy máy P (%)': get('bt_perf'),
+      'Tỷ lệ chất lượng Q (%)': get('bt_quality'),
+      'MTBF (giờ)': get('bt_mtbf'),
+      'Số sự cố / tháng': get('bt_breakdown'),
+      'Thời gian dừng máy TB (phút)': get('bt_downtime'),
+      'Chi phí bảo trì / tháng (tr.đ)': get('bt_cost'),
+      'Ngân sách bảo trì': getRadio('bt_budget'),
+      'Nhu cầu đào tạo': get('bt_training'),
+      'Đề xuất đầu tư thiết bị': get('bt_invest'),
+      '── BÁO CÁO HIỆN TẠI ──': '',
+      'Mức độ trưởng thành báo cáo (L1-L4)': getRadio('bt_maturity'),
+      'Hình thức báo cáo đang dùng': getCheckboxes('bt_rpt'),
+      'Thời gian làm 1 báo cáo (phút)': get('bt_rpt_time'),
+      'Số người làm báo cáo': get('bt_rpt_people'),
+      'Điểm đau trong báo cáo': getCheckboxes('bt_pain'),
+      'Muốn tự động hoá trước nhất': get('bt_rpt_auto'),
+    }
+  };
+}
+
+function exportExcel() {
+  const data = collectData();
+  const wb = XLSX.utils.book_new();
+
+  // Helper: obj -> 2-col rows
+  function objToRows(obj) {
+    return Object.entries(obj).map(([k, v]) => [k, v || '(chưa điền)']);
+  }
+
+  const depts = [
+    { name: 'SX - Sản Xuất', data: data.sx },
+    { name: 'QC - Chất Lượng', data: data.qc },
+    { name: 'Kho & Logistics', data: data.kho },
+    { name: 'KH - Kế Hoạch', data: data.kh },
+    { name: 'BT - Bảo Trì', data: data.bt },
+  ];
+
+  // Summary sheet
+  const summaryRows = [
+    ['BÁO CÁO KHẢO SÁT THỰC TRẠNG NHÀ MÁY — LIFES FOOD', '', ''],
+    ['Địa chỉ:', 'Lô E4-E5 Đường N9, KCN Nam Thuận, Xã Mỹ Hạnh, Tỉnh Tây Ninh, Việt Nam', ''],
+    ['Ngày xuất báo cáo:', new Date().toLocaleDateString('vi-VN'), ''],
+    ['', '', ''],
+    ['PHÒNG BAN', 'NGƯỜI KÊ KHAI', 'TRẠNG THÁI'],
+    ['Sản xuất / Xưởng', data.sx['Người khai báo'], data.sx['Người khai báo'] ? 'Hoàn thành' : 'Chưa điền'],
+    ['Chất lượng QC/QA', data.qc['Người khai báo'], data.qc['Người khai báo'] ? 'Hoàn thành' : 'Chưa điền'],
+    ['Kho & Logistics', data.kho['Người khai báo'], data.kho['Người khai báo'] ? 'Hoàn thành' : 'Chưa điền'],
+    ['Kế hoạch & Vật tư', data.kh['Người khai báo'], data.kh['Người khai báo'] ? 'Hoàn thành' : 'Chưa điền'],
+    ['Bảo trì & Kỹ thuật', data.bt['Người khai báo'], data.bt['Người khai báo'] ? 'Hoàn thành' : 'Chưa điền'],
+    ['', '', ''],
+    ['CÁC CHỈ SỐ QUAN TRỌNG', '', ''],
+    ['Sản lượng thực tế / ngày', data.sx['Sản lượng thực tế TB / ngày'], 'đơn vị'],
+    ['Công suất thiết kế / ngày', data.sx['Công suất thiết kế / ngày'], 'đơn vị'],
+    ['Tỷ lệ hàng lỗi', data.sx['Tỷ lệ hàng lỗi (%)'], '%'],
+    ['Số NCR / tháng', data.qc['Số NCR / tháng'], 'NCR'],
+    ['Tỷ lệ giao hàng đúng hạn', data.kho['Tỷ lệ giao đúng hạn (%)'], '%'],
+    ['OEE Sẵn sàng (A)', data.bt['Tỷ lệ sẵn sàng máy A (%)'], '%'],
+    ['OEE Hiệu suất (P)', data.bt['Hiệu suất chạy máy P (%)'], '%'],
+    ['OEE Chất lượng (Q)', data.bt['Tỷ lệ chất lượng Q (%)'], '%'],
+  ];
+
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{wch:35},{wch:30},{wch:15}];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Tổng Hợp');
+
+  // Dept sheets
+  depts.forEach(dept => {
+    const rows = [
+      [dept.name.toUpperCase()],
+      ['Chỉ tiêu', 'Dữ liệu thu thập'],
+      ...objToRows(dept.data)
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:38},{wch:48}];
+    XLSX.utils.book_append_sheet(wb, ws, dept.name);
+  });
+
+  XLSX.writeFile(wb, `KhaoSat_NhaMay_LifesFood_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+function exportPDF() {
+  var data = collectData();
+  var win = window.open('', '_blank', 'width=900,height=700');
+  if (!win) return;
+  var depts = [
+    { label: 'Sản xuất',          color: '#a8823a', d: data.sx  },
+    { label: 'Chất lượng QC/QA', color: '#2e6b4a', d: data.qc  },
+    { label: 'Kho & Logistics',   color: '#2156a0', d: data.kho },
+    { label: 'Kế hoạch & Vật tư', color: '#5e3a8c', d: data.kh  },
+    { label: 'Bảo trì',            color: '#b85a1e', d: data.bt  },
+  ];
+  var addr = 'Lô E4-E5 Đường N9, KCN Nam Thuận, Xã Mỹ Hạnh, Tỉnh Tây Ninh, Việt Nam';
+  var rows = '';
+  depts.forEach(function(dept) {
+    rows += '<div style="margin-bottom:20px;break-inside:avoid;">'
+      + '<div style="background:' + dept.color + ';color:#fff;padding:8px 14px;font-size:13px;font-weight:600;">'
+      + dept.label + '<' + '/div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    Object.entries(dept.d).forEach(function(pair) {
+      rows += '<tr>'
+        + '<td style="padding:6px 12px;border-bottom:1px solid #eee;color:#555;width:40%">' + pair[0] + '<' + '/td>'
+        + '<td style="padding:6px 12px;border-bottom:1px solid #eee;font-weight:500;">' + (pair[1]||'—') + '<' + '/td>'
+        + '<' + '/tr>';
+    });
+    rows += '<' + '/table><' + '/div>';
+  });
+  var printTag = '<scr' + 'ipt>setTimeout(function(){window.print();},300);<' + '/scr' + 'ipt>';
+  var bodyClose = '<' + '/body><' + '/html>';
+  var doc = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<title>Báo cáo<' + '/title>'
+    + '<style>body{font-family:Arial,sans-serif;padding:32px;color:#1a1814}'
+    + '@media print{body{padding:16px}}<' + '/style><' + '/head><body>'
+    + '<h1 style="font-size:20px;font-weight:600;margin-bottom:4px;">'
+    + 'Báo Cáo Khảo Sát Thực Trạng Nhà Máy<' + '/h1>'
+    + '<p style="font-size:12px;color:#444;margin-bottom:2px;">Lifes Food — ' + addr + '<' + '/p>'
+    + '<p style="font-size:12px;color:#666;margin-bottom:20px;">Ngày xuất: '
+    + new Date().toLocaleDateString('vi-VN') + '<' + '/p>'
+    + rows + printTag + bodyClose;
+  win.document.write(doc);
+  win.document.close();
+}
+
+
+// ── Constants ──────────────────────────────────────────────────
+const DEPTS = [
+  { name: 'Sản xuất',          color: '#a8823a', dataKey: 'sx'  },
+  { name: 'Chất lượng QC/QA',  color: '#2e6b4a', dataKey: 'qc'  },
+  { name: 'Kho & Logistics',   color: '#2156a0', dataKey: 'kho' },
+  { name: 'Kế hoạch & Vật tư', color: '#5e3a8c', dataKey: 'kh'  },
+  { name: 'Bảo trì',           color: '#b85a1e', dataKey: 'bt'  },
+];
+const sendMap = { 0:'pending', 1:'pending', 2:'pending', 3:'pending', 4:'pending' };
+
+// ── Tab navigation ──────────────────────────────────────────────
+function goTab(n) {
+  document.querySelectorAll('.dept-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.dept-tab').forEach(function(t,i){
+    t.classList.remove('active','done');
+    if(sendMap[i]==='done') t.classList.add('done');
+  });
+  document.getElementById('dept'+n).classList.add('active');
+  document.querySelectorAll('.dept-tab')[n].classList.add('active');
+  currentTab = n;
+  var isPrev = n > 0, isNext = n < totalTabs-1;
+  document.getElementById('btnPrev').style.display = isPrev ? 'flex' : 'none';
+  document.getElementById('btnNext').style.display = isNext ? 'flex' : 'none';
+  updateSendButton(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function nextTab() { if(currentTab < totalTabs-1) goTab(currentTab+1); }
+function prevTab()  { if(currentTab > 0) goTab(currentTab-1); }
+function markDone() {}
+
+function updateSendButton(n) {
+  var btn   = document.getElementById('btnSendDept');
+  var label = document.getElementById('btnSendLabel');
+  if(!btn || !label) return;
+  var state = sendMap[n];
+  btn.disabled = false;
+  btn.className = 'btn btn-green';
+  if(state==='done') {
+    btn.className='btn btn-send-done'; label.textContent='✓ Đã gửi — '+DEPTS[n].name; btn.disabled=true;
+  } else if(state==='sending') {
+    btn.className='btn btn-send-sending'; label.textContent='⏳ Đang gửi…'; btn.disabled=true;
+  } else if(state==='error') {
+    btn.className='btn btn-send-error'; label.textContent='✗ Gửi lỗi — thử lại';
+  } else {
+    label.textContent='✉ Gửi báo cáo — '+DEPTS[n].name;
+  }
+}
+
+function setDeptState(n, state) {
+  sendMap[n] = state;
+  var tab = document.querySelectorAll('.dept-tab')[n];
+  if(tab) { tab.classList.remove('done'); if(state==='done') tab.classList.add('done'); }
+  var legItem   = document.getElementById('leg'+n);
+  var legStatus = document.getElementById('legStatus'+n);
+  if(legItem && legStatus) {
+    legItem.className   = 'legend-item '+state;
+    legStatus.className = 'legend-status '+state;
+    var labels = { pending:'Chờ gửi', sending:'Đang gửi…', done:'Đã gửi ✓', error:'Lỗi gửi' };
+    legStatus.textContent = labels[state] || state;
+  }
+  updateSendButton(currentTab);
+  drawDonut();
+  // Refresh dashboard if open
+  if(document.getElementById('dashOverlay') && document.getElementById('dashOverlay').classList.contains('open')) renderDashboard();
+  // Update dash badge
+  var db=document.getElementById('dashBadge'); var dc=Object.values(sendMap).filter(function(s){return s==='done';}).length; if(db) db.style.display=dc>0?'block':'none';
+  var allDone = Object.values(sendMap).every(function(s){ return s==='done'; });
+  if(allDone) {
+    setTimeout(function(){
+      document.querySelectorAll('.dept-section').forEach(function(s){ s.style.display='none'; });
+      var cd = document.getElementById('chartDashboard');
+      var ab = document.getElementById('actionBar');
+      var cs = document.getElementById('completionScreen');
+      if(cd) cd.style.display='none';
+      if(ab) ab.style.display='none';
+      if(cs) cs.style.display='block';
+      window.scrollTo({ top:0, behavior:'smooth' });
+    }, 600);
+  }
+}
+
+function updateProgress() { drawDonut(); }
+
+// ── Donut chart ─────────────────────────────────────────────────
+function drawDonut() {
+  var canvas = document.getElementById('deptDonut');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W=canvas.width, H=canvas.height, cx=W/2, cy=H/2, R=50, r=32;
+  var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  ctx.clearRect(0,0,W,H);
+  var doneCount = Object.values(sendMap).filter(function(s){ return s==='done'; }).length;
+  var segments = [];
+  for(var i=0;i<totalTabs;i++){
+    segments.push({
+      color: sendMap[i]==='done'    ? DEPTS[i].color
+           : sendMap[i]==='sending' ? '#85b7eb'
+           : sendMap[i]==='error'   ? '#f09595'
+           : (isDark ? '#444441' : '#d5d0c6')
+    });
+  }
+  var gap=0.04, total_=segments.length, angle=-Math.PI/2;
+  segments.forEach(function(seg){
+    var slice=(1/total_)*(Math.PI*2-gap*total_);
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,angle+gap/2,angle+slice+gap/2);
+    ctx.closePath(); ctx.fillStyle=seg.color; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle=isDark?'#1a1814':'#ffffff'; ctx.fill();
+    angle+=slice+gap;
+  });
+  var pctEl = document.getElementById('chartPct');
+  if(pctEl) pctEl.textContent = Math.round((doneCount/totalTabs)*100)+'%';
+}
+
+// ── Form helpers ────────────────────────────────────────────────
+function toggleSection(toggleId, targetId) {
+  var wrap = document.getElementById(toggleId);
+  var target = document.getElementById(targetId);
+  var isOn = wrap.classList.toggle('on');
+  var lbl = wrap.querySelector('.t-label');
+  if(lbl) lbl.textContent = isOn ? 'Có PM Plan chính thức' : 'Chưa có PM Plan chính thức';
+  if(target) target.style.display = isOn ? 'block' : 'none';
+}
+
+function addNvlRow() {
+  var tbody = document.querySelector('#kh_nvl_table tbody');
+  if(!tbody) return;
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text" placeholder="Tên NVL"></td>'
+    +'<td><input type="text" placeholder="Nhà cung cấp"></td>'
+    +'<td><div class="unit-wrap"><input type="number" min="0" placeholder="0" style="padding-right:36px"><span class="unit-tag">kg</span></div></td>'
+    +'<td><select><option>Cao</option><option>Trung bình</option><option>Thấp</option></select></td>';
+  tbody.appendChild(tr);
+}
+
+function addEquipRow() {
+  var tbody = document.querySelector('#bt_equip_table tbody');
+  if(!tbody) return;
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text" placeholder="Tên thiết bị"></td>'
+    +'<td><input type="number" min="1990" max="2030" placeholder="2023"></td>'
+    +'<td><select><option>Tốt</option><option>Trung bình</option><option>Cần sửa</option><option>Hỏng</option></select></td>'
+    +'<td><input type="date"></td>'
+    +'<td><select><option>Không</option><option>Có</option><option>Thay mới</option></select></td>';
+  tbody.appendChild(tr);
+}
+
+// ── Auto date & init ────────────────────────────────────────────
+var today = new Date().toISOString().split('T')[0];
+['sx_date'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=today; });
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateConfigIndicator();
+  drawDonut();
+  var gp = document.getElementById('guidePanel');
+  var ap = document.getElementById('actionPanel');
+  if(gp) gp.addEventListener('click', function(e){ if(e.target===this) closeGuide(); });
+  if(ap) ap.addEventListener('click', function(e){ if(e.target===this) closeAction(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ closeGuide(); closeAction(); closeConfig(); }
+  });
+});
+
+
+// ── Validation config per dept ─────────────────────────────────
+var DEPT_RULES = [
+  { // dept0 Sản xuất
+    required: [
+      { id: 'sx_name',       label: 'Họ và tên trưởng bộ phận' },
+      { id: 'sx_date',       label: 'Ngày khảo sát' },
+      { id: 'sx_workers',    label: 'Tổng nhân công' },
+      { id: 'sx_cap_design', label: 'Công suất thiết kế / ngày' },
+      { id: 'sx_cap_actual', label: 'Sản lượng thực tế TB / ngày' },
+    ],
+    radio: [
+      { name: 'sx_ca',       label: 'Số ca sản xuất / ngày' },
+      { name: 'sx_maturity', label: 'Mức độ trưởng thành báo cáo' },
+    ]
+  },
+  { // dept1 QC/QA
+    required: [
+      { id: 'qc_name',  label: 'Họ và tên cán bộ QC' },
+      { id: 'qc_staff', label: 'Số nhân sự QC' },
+      { id: 'qc_ccp',   label: 'Số điểm CCP' },
+      { id: 'qc_ncr',   label: 'Số NCR / tháng' },
+    ],
+    radio: [
+      { name: 'qc_maturity', label: 'Mức độ trưởng thành báo cáo' },
+    ]
+  },
+  { // dept2 Kho
+    required: [
+      { id: 'kho_name',  label: 'Họ và tên trưởng kho' },
+      { id: 'kho_area',  label: 'Diện tích kho (m²)' },
+      { id: 'kho_staff', label: 'Số nhân sự kho' },
+    ],
+    radio: [
+      { name: 'kho_wms',      label: 'Hệ thống quản lý kho (WMS)' },
+      { name: 'kho_method',   label: 'Phương pháp tồn kho' },
+      { name: 'kho_maturity', label: 'Mức độ trưởng thành báo cáo' },
+    ]
+  },
+  { // dept3 Kế hoạch
+    required: [
+      { id: 'kh_name',  label: 'Họ và tên trưởng kế hoạch' },
+      { id: 'kh_staff', label: 'Số nhân sự phòng' },
+    ],
+    radio: [
+      { name: 'kh_maturity', label: 'Mức độ trưởng thành báo cáo' },
+    ]
+  },
+  { // dept4 Bảo trì
+    required: [
+      { id: 'bt_name',  label: 'Họ và tên trưởng bảo trì' },
+      { id: 'bt_staff', label: 'Số kỹ thuật viên' },
+      { id: 'bt_avail', label: 'Tỷ lệ sẵn sàng máy A (%)' },
+      { id: 'bt_perf',  label: 'Hiệu suất chạy máy P (%)' },
+      { id: 'bt_quality',label:'Tỷ lệ chất lượng Q (%)' },
+    ],
+    radio: [
+      { name: 'bt_strategy', label: 'Chiến lược bảo trì' },
+      { name: 'bt_maturity', label: 'Mức độ trưởng thành báo cáo' },
+    ]
+  },
+];
+
+function validateTab() {
+  var n       = currentTab;
+  var rules   = DEPT_RULES[n];
+  var errors  = [];
+
+  // Clear previous highlights
+  document.querySelectorAll('.field-error').forEach(function(el){
+    el.classList.remove('field-error');
+    var msg = el.querySelector('.field-error-msg');
+    if (msg) msg.remove();
+  });
+
+  // Check required text/number inputs
+  rules.required.forEach(function(rule) {
+    var el = document.getElementById(rule.id);
+    if (!el) return;
+    var val = el.value.trim();
+    if (!val) {
+      errors.push(rule.label);
+      var field = el.closest('.field');
+      if (field) {
+        field.classList.add('field-error');
+        var msg = document.createElement('div');
+        msg.className = 'field-error-msg';
+        msg.innerHTML = '&#9888; Trường bắt buộc';
+        field.appendChild(msg);
+      }
+    }
+  });
+
+  // Check radio groups
+  if (rules.radio) {
+    rules.radio.forEach(function(rule) {
+      var checked = document.querySelector('input[name="' + rule.name + '"]:checked');
+      if (!checked) {
+        errors.push(rule.label);
+        // Highlight the chips group
+        var anyRadio = document.querySelector('input[name="' + rule.name + '"]');
+        if (anyRadio) {
+          var container = anyRadio.closest('.field') || anyRadio.closest('.form-grid');
+          if (container) container.classList.add('field-error');
+        }
+      }
+    });
+  }
+
+  // Show result
+  var checkBtn = document.getElementById('btnCheck');
+  if (errors.length === 0) {
+    // All good
+    checkBtn.classList.add('ok');
+    checkBtn.innerHTML = '&#10003; Hợp lệ — sẵn sàng gửi';
+    closeToast();
+    setTimeout(function() {
+      checkBtn.classList.remove('ok');
+      checkBtn.innerHTML = '&#10003; Kiểm tra trước khi gửi';
+    }, 3000);
+  } else {
+    // Show errors
+    checkBtn.classList.remove('ok');
+    checkBtn.innerHTML = '&#9888; ' + errors.length + ' mục cần bổ sung';
+    var list = document.getElementById('validateList');
+    list.innerHTML = errors.map(function(e){
+      return '<li>' + e + '</li>';
+    }).join('');
+    document.getElementById('validateToast').classList.add('show');
+    // Auto-hide after 8s
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(closeToast, 8000);
+  }
+  return errors.length === 0;
+}
+
+function closeToast() {
+  var t = document.getElementById('validateToast');
+  if (t) t.classList.remove('show');
+  var btn = document.getElementById('btnCheck');
+  if (btn && !btn.classList.contains('ok')) {
+    btn.innerHTML = '&#10003; Kiểm tra trước khi gửi';
+  }
+}
+
+// validation runs inside sendDept directly
+
+// ── Panel open/close ──
+function openGuide() {
+  document.getElementById('guidePanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuide() {
+  document.getElementById('guidePanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openAction() {
+  document.getElementById('actionPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAction() {
+  document.getElementById('actionPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Attach listeners after DOM is ready
+
+
+// ── Dashboard ──────────────────────────────────────────────────
+function openDashboard() {
+  renderDashboard();
+  document.getElementById('dashOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDashboard() {
+  document.getElementById('dashOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderDashboard() {
+  var data = collectData();
+  var prefixes = ['sx','qc','kho','kh','bt'];
+  var names    = ['Sản xuất','QC/QA','Kho','Kế hoạch','Bảo trì'];
+
+  // ── 1. Summary cards ──────────────────────────────────────
+  var summaryEl = document.getElementById('dashSummary');
+  if (!summaryEl) return;
+  summaryEl.innerHTML = '';
+  prefixes.forEach(function(p, i) {
+    var state  = sendMap[i] || 'pending';
+    var person = data[p]['Người khai báo'] || '—';
+    var statusLabel = state==='done' ? 'Đã gửi ✓' : state==='error' ? 'Lỗi gửi' : 'Chờ gửi';
+    var card = document.createElement('div');
+    card.className = 'dash-dept-card ' + (state==='done' ? 'sent' : state==='error' ? 'error' : 'pending');
+    card.innerHTML =
+      '<div class="dash-dept-name">' + names[i] + '</div>' +
+      '<span class="dash-dept-status ' + state + '">' + statusLabel + '</span>' +
+      '<div class="dash-dept-person">' + (state==='done' ? person : 'Chưa nhập liệu') + '</div>';
+    summaryEl.appendChild(card);
+  });
+
+  // ── 2. Maturity matrix ────────────────────────────────────
+  var matEl = document.getElementById('dashMaturity');
+  if (matEl) {
+    var rows = [
+      { key: 'Mức độ trưởng thành báo cáo (L1-L4)', label: 'Maturity Level' },
+      { key: 'Hình thức báo cáo đang dùng',          label: 'Hình thức' },
+      { key: 'Thời gian làm 1 báo cáo (phút)',        label: 'Thời gian (phút)' },
+      { key: 'Số người làm báo cáo',                  label: 'Số người' },
+    ];
+    var headerHTML = '<div class="mg-header">Tiêu chí</div>';
+    names.forEach(function(n){ headerHTML += '<div class="mg-header">' + n + '</div>'; });
+    var rowsHTML = '';
+    rows.forEach(function(row) {
+      rowsHTML += '<div class="mg-label">' + row.label + '</div>';
+      prefixes.forEach(function(p, i) {
+        var val = (data[p] && data[p][row.key]) || '';
+        var display = val;
+        var cls = '';
+        if (row.key.indexOf('Maturity') !== -1 || row.key.indexOf('(L1-L4)') !== -1) {
+          cls = val ? 'mg-badge ' + val : 'mg-badge na';
+          display = val || '—';
+        }
+        rowsHTML += '<div class="mg-cell">' +
+          (cls ? '<span class="' + cls + '">' + display + '</span>' : (val || '<span style="color:var(--ink3)">—</span>')) +
+          '</div>';
+      });
+    });
+    matEl.innerHTML = headerHTML + rowsHTML;
+  }
+
+  // ── 3. Pain heatmap ───────────────────────────────────────
+  var painEl = document.getElementById('dashPain');
+  if (painEl) {
+    var painKeys = {
+      'time':    'Tốn quá nhiều thời gian',
+      'error':   'Dễ sai / nhầm số liệu',
+      'delayed': 'GĐ nhận thông tin trễ',
+      'no_std':  'Không có mẫu thống nhất',
+      'no_hist': 'Không lưu lịch sử so sánh',
+      'silo':    'Dữ liệu bị cô lập giữa bộ phận',
+    };
+    var painCounts = {};
+    Object.keys(painKeys).forEach(function(k){ painCounts[k] = 0; });
+    prefixes.forEach(function(p) {
+      var painVal = (data[p] && data[p]['Điểm đau trong báo cáo']) || '';
+      painVal.split(', ').forEach(function(v) {
+        if (painCounts.hasOwnProperty(v)) painCounts[v]++;
+      });
+    });
+    var maxCount = Math.max.apply(null, Object.values(painCounts)) || 1;
+    var sorted = Object.entries(painCounts).sort(function(a,b){ return b[1]-a[1]; });
+    var painHTML = '';
+    sorted.forEach(function(entry) {
+      var key = entry[0], count = entry[1];
+      var pct = Math.round((count/5)*100);
+      painHTML += '<div class="pain-row">'
+        + '<span class="pain-label">' + painKeys[key] + '</span>'
+        + '<div class="pain-bar-wrap"><div class="pain-bar-fill" style="width:' + pct + '%"></div></div>'
+        + '<span class="pain-count">' + count + '/5</span>'
+        + '</div>';
+    });
+    painEl.innerHTML = painHTML;
+  }
+
+  // ── 4. KPI table ──────────────────────────────────────────
+  var kpiBody = document.getElementById('dashKpiBody');
+  if (kpiBody) {
+    var kpiRows = [
+      { label: 'Người khai báo',              keys: prefixes.map(function(p){ return data[p]['Người khai báo']; }) },
+      { label: 'Nhân sự hiện tại',             keys: [data.sx['Tổng nhân công'], data.qc['Số nhân sự QC'], data.kho['Số nhân sự kho'], data.kh['Số nhân sự phòng'], data.bt['Số KTV bảo trì']] },
+      { label: 'Tỷ lệ hàng lỗi (%)',           keys: [data.sx['Tỷ lệ hàng lỗi (%)'], data.qc['Số NCR / tháng'], '—', '—', '—'] },
+      { label: 'OEE / Hiệu suất (%)',          keys: ['—', '—', data.kho['Tỷ lệ giao đúng hạn (%)'], data.kh['Độ chính xác KH/thực tế (%)'], data.bt['Tỷ lệ sẵn sàng máy A (%)']] },
+      { label: 'Maturity Level',               keys: prefixes.map(function(p){ return data[p]['Mức độ trưởng thành báo cáo (L1-L4)']; }) },
+      { label: 'Thời gian báo cáo (phút)',     keys: prefixes.map(function(p){ return data[p]['Thời gian làm 1 báo cáo (phút)']; }) },
+      { label: 'Muốn tự động hoá',             keys: prefixes.map(function(p){ return data[p]['Muốn tự động hoá trước nhất'] || '—'; }) },
+    ];
+    kpiBody.innerHTML = kpiRows.map(function(row) {
+      return '<tr><td style="font-weight:600;color:var(--ink2)">' + row.label + '</td>'
+        + row.keys.map(function(v){
+            var val = v || '—';
+            var isMat = ['L1','L2','L3','L4'].includes(val);
+            return '<td>' + (isMat ? '<span class="mg-badge ' + val + '">' + val + '</span>' : '<span class="kpi-val">' + val + '</span>') + '</td>';
+          }).join('') + '</tr>';
+    }).join('');
+  }
+
+  // ── Update badge ──────────────────────────────────────────
+  var badge = document.getElementById('dashBadge');
+  var doneCount = Object.values(sendMap).filter(function(s){ return s==='done'; }).length;
+  if (badge) badge.style.display = doneCount > 0 ? 'block' : 'none';
+}
+
+
+// ── Reset logic ────────────────────────────────────────────────
+var _pendingResetType = null;
+
+function confirmReset(type) {
+  _pendingResetType = type;
+  var icon  = document.getElementById('confirmIcon');
+  var title = document.getElementById('confirmTitle');
+  var sub   = document.getElementById('confirmSub');
+  var okBtn = document.getElementById('confirmOkBtn');
+
+  if (type === 'tab') {
+    var deptName = DEPTS[currentTab].name;
+    icon.textContent  = '\u21ba'; // ↺
+    title.textContent = 'Xóa dữ liệu phòng ' + deptName + '?';
+    sub.innerHTML     = 'Toàn bộ dữ liệu đã điền của <strong>' + deptName
+      + '</strong> sẽ bị xóa sạch.<br>Trạng thái gửi sẽ reset — bạn có thể điền lại và gửi lại.';
+    okBtn.textContent = 'Xóa & làm lại phòng này';
+  } else {
+    icon.textContent  = '\u26a0'; // ⚠
+    title.textContent = 'Xóa toàn bộ khảo sát?';
+    sub.innerHTML     = '<strong>Tất cả 5 phòng ban</strong> sẽ bị reset về trạng thái ban đầu.<br>'
+      + 'Dữ liệu đã điền và trạng thái gửi đều bị xóa sạch.';
+    okBtn.textContent = 'Xóa tất cả & bắt đầu lại';
+  }
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  _pendingResetType = null;
+}
+
+function executeReset() {
+  closeConfirm();
+  if (_pendingResetType === 'tab') {
+    resetTab(currentTab);
+  } else {
+    resetAll();
+  }
+}
+
+function resetTab(n) {
+  // 1. Clear all inputs in this dept section
+  var section = document.getElementById('dept' + n);
+  if (!section) return;
+  section.querySelectorAll('input:not([type="radio"]):not([type="checkbox"])').forEach(function(el) {
+    el.value = '';
+  });
+  section.querySelectorAll('textarea').forEach(function(el) { el.value = ''; });
+  section.querySelectorAll('select').forEach(function(el) { el.selectedIndex = 0; });
+  section.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(function(el) {
+    el.checked = false;
+  });
+  // Remove dynamic rows (NVL table, equipment table) back to 1 row
+  var nvlTbody = section.querySelector('#kh_nvl_table tbody');
+  if (nvlTbody) {
+    while (nvlTbody.rows.length > 1) nvlTbody.deleteRow(1);
+    nvlTbody.rows[0] && nvlTbody.rows[0].querySelectorAll('input,select').forEach(function(el){ el.value=''; });
+  }
+  var btTbody = section.querySelector('#bt_equip_table tbody');
+  if (btTbody) {
+    while (btTbody.rows.length > 1) btTbody.deleteRow(1);
+    btTbody.rows[0] && btTbody.rows[0].querySelectorAll('input,select').forEach(function(el){ el.value=''; });
+  }
+
+  // 2. Reset sendMap state
+  sendMap[n] = 'pending';
+
+  // 3. Reset UI
+  setDeptState(n, 'pending');
+  updateSendButton(n);
+
+  // 4. Hide reset button — will show again only when done
+  var resetBtn = document.getElementById('btnResetTab');
+  if (resetBtn) resetBtn.classList.remove('visible');
+
+  // 5. Re-enable send button
+  var sendBtn = document.getElementById('btnSendDept');
+  if (sendBtn) { sendBtn.disabled = false; }
+
+  // 6. Clear validation highlights
+  section.querySelectorAll('.field-error').forEach(function(el) {
+    el.classList.remove('field-error');
+    var msg = el.querySelector('.field-error-msg');
+    if (msg) msg.remove();
+  });
+
+  // 7. Scroll to top of section
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // 8. Re-draw donut
+  drawDonut();
+
+  // Show confirmation toast
+  showResetConfirm(DEPTS[n].name + ' — đã xóa, sẵn sàng điền lại');
+}
+
+function resetAll() {
+  for (var i = 0; i < totalTabs; i++) resetTab(i);
+  // Show all sections again (in case completion screen was showing)
+  document.querySelectorAll('.dept-section').forEach(function(s) {
+    s.style.display = '';
+    s.classList.remove('active');
+  });
+  var cd = document.getElementById('chartDashboard');
+  var ab = document.getElementById('actionBar');
+  var cs = document.getElementById('completionScreen');
+  if (cd) cd.style.display = '';
+  if (ab) ab.style.display = '';
+  if (cs) cs.style.display = 'none';
+  goTab(0);
+  showResetConfirm('Đã xóa toàn bộ — sẵn sàng khảo sát mới');
+}
+
+function showResetConfirm(msg) {
+  // Reuse validate toast with green color
+  var toast = document.getElementById('validateToast');
+  var list  = document.getElementById('validateList');
+  if (!toast || !list) return;
+  toast.style.borderLeftColor = 'var(--green)';
+  toast.querySelector('.validate-toast-title').style.color = 'var(--green)';
+  toast.querySelector('.validate-toast-title').innerHTML = '&#10003; ' + msg;
+  list.innerHTML = '';
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(function() {
+    closeToast();
+    // Restore red color for next validation
+    toast.style.borderLeftColor = 'var(--red)';
+    toast.querySelector('.validate-toast-title').style.color = 'var(--red)';
+    toast.querySelector('.validate-toast-title').innerHTML = '&#9888; Vui lòng kiểm tra lại';
+  }, 3000);
+}
+
+// Show/hide reset button based on tab state
+var _origGoTab = goTab;
+goTab = function(n) {
+  _origGoTab(n);
+  var resetBtn = document.getElementById('btnResetTab');
+  if (resetBtn) {
+    if (sendMap[n] === 'done') {
+      resetBtn.classList.add('visible');
+    } else {
+      resetBtn.classList.remove('visible');
+    }
+  }
+};
+
+// Also update when setDeptState changes
+var _origSetDeptState = setDeptState;
+setDeptState = function(n, state) {
+  _origSetDeptState(n, state);
+  if (n === currentTab) {
+    var resetBtn = document.getElementById('btnResetTab');
+    if (resetBtn) {
+      if (state === 'done') {
+        resetBtn.classList.add('visible');
+      } else {
+        resetBtn.classList.remove('visible');
+      }
+    }
+  }
+};
+</script>
+
+<!-- ══════════════ GUIDE PANEL ══════════════ -->
+<div class="panel-overlay" id="guidePanel">
+<div class="panel-inner">
+  <div class="panel-top-bar">
+    <div class="panel-top-title">📋 Hướng dẫn điền khảo sát</div>
+    <button class="panel-close" onclick="closeGuide()">✕</button>
+  </div>
+  <div class="panel-body">
+
+    <div class="callout info" style="margin-bottom:20px;">
+      <span class="callout-icon">ℹ</span>
+      <div><strong>Mục đích khảo sát</strong>Thu thập dữ liệu thực trạng nhà máy một lần để GĐ phân tích và lập kế hoạch cải tiến 6 tháng. Mỗi phòng ban điền phần của mình, bấm <strong>Gửi</strong> — không cần chờ phòng khác.</div>
+    </div>
+
+    <!-- SẢN XUẤT -->
+    <div class="guide-dept">
+      <div class="guide-dept-head" style="background:#f5ead5;color:#7a5a1a;">
+        <span style="font-size:16px;">⚙</span> Phòng Sản Xuất / Xưởng
+      </div>
+      <div class="guide-dept-body">
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#f5ead5;color:#7a5a1a;">1</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Thông tin cơ bản</div>
+            <div class="guide-step-desc">Điền họ tên, chức vụ và ngày khảo sát. Chọn đúng số ca vận hành/ngày hiện tại (1, 2 hoặc 3 ca).</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#f5ead5;color:#7a5a1a;">2</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Năng lực & sản lượng</div>
+            <div class="guide-step-desc"><strong>Công suất thiết kế</strong> = số đơn vị tối đa dây chuyền có thể sản xuất/ngày theo thiết kế. <strong>Thực tế</strong> = trung bình thực tế 3 tháng gần nhất. Tỷ lệ hàng lỗi = tổng sản phẩm không đạt / tổng sản xuất × 100%.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#f5ead5;color:#7a5a1a;">3</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Tự đánh giá 1–5</div>
+            <div class="guide-step-desc">1 = Rất yếu / chưa có, 3 = Trung bình, 5 = Tốt / hoàn thiện. Đánh giá trung thực — GĐ cần số liệu thật để cải tiến.</div>
+          </div>
+        </div>
+        <div class="guide-tip"><strong>Lưu ý:</strong> Trường "Vấn đề tồn đọng" quan trọng nhất — mô tả cụ thể, không cần viết đẹp, cần viết đúng.</div>
+      </div>
+    </div>
+
+    <!-- QC/QA -->
+    <div class="guide-dept">
+      <div class="guide-dept-head" style="background:#ddeee5;color:#1a5c38;">
+        <span style="font-size:16px;">🔬</span> Phòng Chất Lượng QC / QA
+      </div>
+      <div class="guide-dept-body">
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#ddeee5;color:#1a5c38;">1</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Chứng chỉ & hệ thống</div>
+            <div class="guide-step-desc">Tick vào các chứng chỉ đang áp dụng thực tế (không tính chứng chỉ đã hết hạn hoặc chưa audit lại).</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#ddeee5;color:#1a5c38;">2</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Chỉ số CCP & NCR</div>
+            <div class="guide-step-desc"><strong>CCP</strong> = số điểm kiểm soát tới hạn trong quy trình HACCP. <strong>NCR/tháng</strong> = số phiếu không phù hợp trung bình/tháng gần nhất. Tỷ lệ xử lý 24h = % NCR được đóng trong vòng 24 giờ.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#ddeee5;color:#1a5c38;">3</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Thiết bị kiểm nghiệm</div>
+            <div class="guide-step-desc">Tick vào các thiết bị/năng lực thực sự đang có tại nhà máy. "Thuê ngoài" = gửi mẫu đến lab bên ngoài.</div>
+          </div>
+        </div>
+        <div class="guide-tip"><strong>Quan trọng:</strong> Phần "Rủi ro chất lượng lớn nhất" — đây là thông tin GĐ cần nhất để ưu tiên đầu tư thiết bị.</div>
+      </div>
+    </div>
+
+    <!-- KHO -->
+    <div class="guide-dept">
+      <div class="guide-dept-head" style="background:#e4ecf8;color:#1a3a6e;">
+        <span style="font-size:16px;">📦</span> Phòng Kho & Logistics
+      </div>
+      <div class="guide-dept-body">
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#e4ecf8;color:#1a3a6e;">1</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Năng lực kho</div>
+            <div class="guide-step-desc">Diện tích kho (m²) tính cả kho thường và kho lạnh. Tỷ lệ sử dụng = diện tích đang dùng / tổng diện tích × 100%.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#e4ecf8;color:#1a3a6e;">2</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">WMS & phương pháp tồn kho</div>
+            <div class="guide-step-desc"><strong>FIFO</strong> = hàng vào trước xuất trước (theo ngày nhập). <strong>FEFO</strong> = hàng hết hạn sớm hơn xuất trước — bắt buộc với thực phẩm. Chọn cái đang áp dụng thực tế.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#e4ecf8;color:#1a3a6e;">3</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Chỉ số xuất hàng</div>
+            <div class="guide-step-desc">Tỷ lệ giao đúng hạn = % đơn hàng giao đúng ngày cam kết. Stockout = số lần kho hết hàng gây không thể giao hàng đúng hẹn.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KẾ HOẠCH -->
+    <div class="guide-dept">
+      <div class="guide-dept-head" style="background:#ede5f8;color:#3d1a7a;">
+        <span style="font-size:16px;">📊</span> Phòng Kế Hoạch & Vật Tư
+      </div>
+      <div class="guide-dept-body">
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#ede5f8;color:#3d1a7a;">1</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Độ chính xác kế hoạch</div>
+            <div class="guide-step-desc">= (Sản lượng thực tế / Kế hoạch) × 100%. Nếu không có số liệu chính xác, ước lượng trung thực theo kinh nghiệm.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#ede5f8;color:#3d1a7a;">2</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Bảng NVL chiến lược</div>
+            <div class="guide-step-desc">Chỉ điền các nguyên vật liệu quan trọng nhất — nếu thiếu thì không sản xuất được. Rủi ro cung ứng "Cao" = chỉ có 1 nhà cung cấp hoặc thường xuyên giao trễ.</div>
+          </div>
+        </div>
+        <div class="guide-tip"><strong>Mẹo:</strong> Trường "Số lần thiếu NVL gây dừng SX/quý" — điền số thực, không cần làm đẹp số liệu.</div>
+      </div>
+    </div>
+
+    <!-- BẢO TRÌ -->
+    <div class="guide-dept">
+      <div class="guide-dept-head" style="background:#faeadf;color:#7a2e0a;">
+        <span style="font-size:16px;">🔧</span> Phòng Bảo Trì & Kỹ Thuật
+      </div>
+      <div class="guide-dept-body">
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#faeadf;color:#7a2e0a;">1</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Chỉ số OEE</div>
+            <div class="guide-step-desc"><strong>A (Availability)</strong> = Giờ máy chạy thực / Giờ kế hoạch × 100%. <strong>P (Performance)</strong> = Tốc độ thực tế / Tốc độ thiết kế × 100%. <strong>Q (Quality)</strong> = Sản phẩm đạt / Tổng sản xuất × 100%. OEE = A × P × Q.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#faeadf;color:#7a2e0a;">2</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">MTBF — Mean Time Between Failures</div>
+            <div class="guide-step-desc">= Tổng giờ vận hành / Số lần sự cố dừng máy. Nếu chưa có số liệu, ước tính dựa trên 3 tháng gần nhất.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-step-num" style="background:#faeadf;color:#7a2e0a;">3</div>
+          <div class="guide-step-body">
+            <div class="guide-step-title">Bảng thiết bị trọng yếu</div>
+            <div class="guide-step-desc">Liệt kê các máy quan trọng nhất — nếu máy đó hỏng thì toàn bộ dây chuyền dừng. Điền đúng năm sản xuất và ngày bảo trì cuối.</div>
+          </div>
+        </div>
+        <div class="guide-tip"><strong>Chiến lược bảo trì:</strong> PM = bảo trì có lịch định kỳ (tốt). CBM = bảo trì dựa trên cảm biến/dữ liệu (rất tốt). BM = chờ hỏng mới sửa (không khuyến khích cho nhà máy thực phẩm).</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ ACTION PLAN PANEL ══════════════ -->
+<div class="panel-overlay" id="actionPanel">
+<div class="panel-inner" style="max-width:900px;">
+  <div class="panel-top-bar" style="background:#0a2a2a;border-color:#1a4a4a;">
+    <div class="panel-top-title" style="color:#e8f5f3;font-size:18px;">🎯 Action Plan — Nhà Máy Lifes Food</div>
+    <button class="panel-close" onclick="closeAction()" style="color:rgba(232,245,243,0.5);">✕</button>
+  </div>
+
+  <!-- KPI Hero -->
+  <div class="ap-hero">
+    <div class="ap-hero-kicker">Lô E4-E5 KCN Nam Thuận · Tây Ninh · 2025–2026</div>
+    <div class="ap-hero-title">Kế hoạch cải tiến 6 tháng</div>
+    <div class="ap-hero-sub">Ưu tiên gấp trong 2 tháng đầu — Triển khai dài hạn tháng 3–6</div>
+    <div style="margin-top:16px;padding:11px 16px;background:rgba(32,201,177,0.09);border:1px solid rgba(32,201,177,0.22);border-radius:6px;font-size:12px;line-height:1.65;color:rgba(232,245,243,0.7);">
+      <span style="color:#20c9b1;font-weight:700;">&#9888; Lưu ý &mdash;</span>
+      <strong style="color:#e8f5f3;font-weight:600;">Kế hoạch hành động chính thức sẽ được ban hành trong vòng 7 ngày sau khi tất cả phòng ban hoàn tất nhập liệu.</strong>
+    </div>
+    <div class="ap-kpis">
+      <div class="ap-kpi">
+        <span class="ap-kpi-val">≥85%</span>
+        <span class="ap-kpi-label">OEE mục tiêu</span>
+      </div>
+      <div class="ap-kpi">
+        <span class="ap-kpi-val">&lt;2%</span>
+        <span class="ap-kpi-label">Tỷ lệ hàng lỗi</span>
+      </div>
+      <div class="ap-kpi">
+        <span class="ap-kpi-val">98%</span>
+        <span class="ap-kpi-label">Giao đúng hạn</span>
+      </div>
+      <div class="ap-kpi">
+        <span class="ap-kpi-val">0</span>
+        <span class="ap-kpi-label">Dừng SX vì NVL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ap-body">
+
+    <!-- Readiness Charts -->
+    <div class="readiness-wrap">
+      <div class="readiness-card">
+        <div class="readiness-card-title">Đánh giá hiện trạng — Năng lực</div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Sản xuất</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:60%;background:#20c9b1;"></div></div>
+          <span class="readiness-bar-val">60%</span>
+        </div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Chất lượng</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:55%;background:#20c9b1;"></div></div>
+          <span class="readiness-bar-val">55%</span>
+        </div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Kho vận</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:50%;background:#a8823a;"></div></div>
+          <span class="readiness-bar-val">50%</span>
+        </div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Kế hoạch</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:45%;background:#a8823a;"></div></div>
+          <span class="readiness-bar-val">45%</span>
+        </div>
+        <div class="readiness-bar-row" style="margin-bottom:0">
+          <span class="readiness-bar-label">Bảo trì</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:40%;background:#c0392b;"></div></div>
+          <span class="readiness-bar-val">40%</span>
+        </div>
+      </div>
+      <div class="readiness-card">
+        <div class="readiness-card-title">Mục tiêu sau 6 tháng</div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Sản xuất</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:85%;background:#0d7a6b;"></div></div>
+          <span class="readiness-bar-val">85%</span>
+        </div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Chất lượng</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:90%;background:#0d7a6b;"></div></div>
+          <span class="readiness-bar-val">90%</span>
+        </div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Kho vận</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:80%;background:#0d7a6b;"></div></div>
+          <span class="readiness-bar-val">80%</span>
+        </div>
+        <div class="readiness-bar-row">
+          <span class="readiness-bar-label">Kế hoạch</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:85%;background:#0d7a6b;"></div></div>
+          <span class="readiness-bar-val">85%</span>
+        </div>
+        <div class="readiness-bar-row" style="margin-bottom:0">
+          <span class="readiness-bar-label">Bảo trì</span>
+          <div class="readiness-bar-track"><div class="readiness-bar-fill" style="width:80%;background:#0d7a6b;"></div></div>
+          <span class="readiness-bar-val">80%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gantt Timeline -->
+    <div class="gantt-wrap">
+      <div class="gantt-title">Timeline 6 tháng triển khai</div>
+      <div class="gantt-months">
+        <div>Hạng mục</div>
+        <div>T1</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Lập PM Plan bảo trì</div>
+        <div class="gantt-cell gantt-span-2"><div class="gantt-bar jade">Khẩn cấp</div></div>
+        <div></div><div></div><div></div><div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Chuẩn hoá SOP sản xuất</div>
+        <div class="gantt-cell gantt-span-2"><div class="gantt-bar jade">SOP v1</div></div>
+        <div></div><div></div><div></div><div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Kiểm kê & audit thiết bị</div>
+        <div class="gantt-cell"><div class="gantt-bar jade">Audit</div></div>
+        <div></div><div></div><div></div><div></div><div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Triển khai FEFO kho lạnh</div>
+        <div></div>
+        <div class="gantt-cell"><div class="gantt-bar jade">Setup</div></div>
+        <div class="gantt-cell"><div class="gantt-bar gold">Vận hành</div></div>
+        <div></div><div></div><div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Nâng cấp hệ thống QC</div>
+        <div></div><div></div>
+        <div class="gantt-cell gantt-span-2"><div class="gantt-bar gold">Thiết bị + đào tạo</div></div>
+        <div></div><div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Xây dựng MRP / kế hoạch</div>
+        <div></div><div></div><div></div>
+        <div class="gantt-cell gantt-span-2"><div class="gantt-bar gold">Triển khai</div></div>
+        <div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Đánh giá & báo cáo GĐ</div>
+        <div></div><div></div><div></div><div></div><div></div>
+        <div class="gantt-cell"><div class="gantt-bar slate">Review</div></div>
+      </div>
+    </div>
+
+    <!-- Phase 1: URGENT -->
+    <div class="ap-phase">
+      <div class="ap-phase-head">
+        <span class="ap-phase-badge urgent">GIAI ĐOẠN 1</span>
+        <span class="ap-phase-title">Ưu tiên gấp — 2 tháng đầu</span>
+        <span class="ap-phase-meta">Tháng 1 → Tháng 2</span>
+      </div>
+      <div class="ap-items">
+
+        <div class="ap-item urgent-item">
+          <div class="ap-num urgent-num">U1</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Lập PM Plan — Bảo trì phòng ngừa chính thức</div>
+            <div class="ap-item-desc">Kiểm kê toàn bộ thiết bị trọng yếu, lập lịch bảo dưỡng định kỳ cho từng máy. Ưu tiên máy chiết rót yến và hệ thống thanh trùng. Phân công KTV bảo trì cụ thể.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Bảo trì</span>
+              <span class="ap-tag kpi">OEE +15%</span>
+              <span class="ap-tag kpi">Giảm dừng máy đột xuất</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline hot">Tuần 1–3</div>
+        </div>
+
+        <div class="ap-item urgent-item">
+          <div class="ap-num urgent-num">U2</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Chuẩn hoá SOP — Quy trình sản xuất yến sào</div>
+            <div class="ap-item-desc">Viết và ban hành SOP cho 3 quy trình cốt lõi: chiết rót, thanh trùng, đóng gói. Đào tạo toàn bộ công nhân theo SOP mới. Dán tại vị trí vận hành.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Sản xuất</span>
+              <span class="ap-tag dept">QC/QA</span>
+              <span class="ap-tag kpi">Giảm lỗi &lt;2%</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline hot">Tuần 2–4</div>
+        </div>
+
+        <div class="ap-item urgent-item">
+          <div class="ap-num urgent-num">U3</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Audit & chốt danh sách NVL chiến lược</div>
+            <div class="ap-item-desc">Rà soát tồn kho tổ yến thô, hũ thủy tinh, bao bì. Xác định tồn kho tối thiểu an toàn. Đàm phán lại điều khoản giao hàng với nhà cung cấp yến sào đảo.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Kế hoạch</span>
+              <span class="ap-tag kpi">0 lần dừng SX vì NVL</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline hot">Tuần 3–6</div>
+        </div>
+
+        <div class="ap-item urgent-item">
+          <div class="ap-num urgent-num">U4</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Triển khai FEFO trong kho lạnh & kho NVL</div>
+            <div class="ap-item-desc">Dán nhãn ngày sản xuất / hạn sử dụng tại kệ. Thiết lập quy trình kiểm hạn tuần theo ca. Đào tạo nhân viên kho áp dụng FEFO thực tế.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Kho</span>
+              <span class="ap-tag dept">QC/QA</span>
+              <span class="ap-tag kpi">ISO 22000 compliance</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline hot">Tháng 2</div>
+        </div>
+
+        <div class="ap-item urgent-item">
+          <div class="ap-num urgent-num">U5</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Thiết lập KPI dashboard hàng tuần cho GĐ nhà máy</div>
+            <div class="ap-item-desc">5 chỉ số cốt lõi: OEE, tỷ lệ lỗi, NCR/tuần, tồn kho NVL chính, tỷ lệ giao đúng hạn. Báo cáo mỗi thứ Hai 8h sáng qua email. Dùng form này làm nguồn dữ liệu đầu vào.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Tất cả phòng ban</span>
+              <span class="ap-tag kpi">Visibility tổng thể</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline hot">Tháng 2</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Phase 2: PLAN -->
+    <div class="ap-phase">
+      <div class="ap-phase-head">
+        <span class="ap-phase-badge plan">GIAI ĐOẠN 2</span>
+        <span class="ap-phase-title">Kế hoạch dài hạn — Tháng 3 đến 6</span>
+        <span class="ap-phase-meta">Tháng 3 → Tháng 6</span>
+      </div>
+      <div class="ap-items">
+
+        <div class="ap-item plan-item">
+          <div class="ap-num plan-num">P1</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Nâng cấp hệ thống kiểm nghiệm nội bộ QC</div>
+            <div class="ap-item-desc">Đầu tư thiết bị kiểm nghiệm vi sinh tại chỗ (giảm phụ thuộc lab thuê ngoài). Xây dựng quy trình lấy mẫu chuẩn hoá theo lô. Mục tiêu: rút ngắn vòng phản hồi chất lượng từ 48h xuống &lt;8h.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">QC/QA</span>
+              <span class="ap-tag kpi">Phản hồi &lt;8h</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline">Tháng 3–4</div>
+        </div>
+
+        <div class="ap-item plan-item">
+          <div class="ap-num plan-num">P2</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Triển khai MRP — Hoạch định nguyên vật liệu</div>
+            <div class="ap-item-desc">Số hoá kế hoạch sản xuất và NVL trên hệ thống (Google Sheet nâng cao hoặc phần mềm MRP nhỏ). Liên kết dữ liệu kho ↔ kế hoạch SX ↔ đơn hàng mua. Chu kỳ lập kế hoạch 2 tuần.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Kế hoạch</span>
+              <span class="ap-tag dept">Kho</span>
+              <span class="ap-tag kpi">Độ chính xác KH ≥85%</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline">Tháng 3–5</div>
+        </div>
+
+        <div class="ap-item plan-item">
+          <div class="ap-num plan-num">P3</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Nâng cấp dây chuyền — Mở rộng công suất NutriLifes</div>
+            <div class="ap-item-desc">Đánh giá bottleneck dây chuyền ngũ cốc NutriLifes (đang là Question Mark → cần đẩy lên Star). Lập kế hoạch đầu tư thiết bị bổ sung hoặc tối ưu layout xưởng để tăng 30% công suất.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">Sản xuất</span>
+              <span class="ap-tag dept">Bảo trì</span>
+              <span class="ap-tag kpi">Công suất +30%</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline">Tháng 4–5</div>
+        </div>
+
+        <div class="ap-item plan-item">
+          <div class="ap-num plan-num">P4</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Chuẩn bị hồ sơ tái chứng nhận ISO 22000</div>
+            <div class="ap-item-desc">Rà soát tài liệu, hồ sơ HACCP, quy trình vệ sinh. Thực hiện internal audit theo checklist ISO 22000:2018. Khắc phục NCR trước khi mời tổ chức chứng nhận EFC audit.</div>
+            <div class="ap-item-tags">
+              <span class="ap-tag dept">QC/QA</span>
+              <span class="ap-tag dept">Sản xuất</span>
+              <span class="ap-tag kpi">ISO 22000 maintained</span>
+            </div>
+          </div>
+          <div class="ap-item-deadline">Tháng 5–6</div>
+        </div>
+
+        <div class="ap-item plan-item">
+          <div class="ap-num plan-num">P5</div>
+          <div class="ap-item-body">
+            <div class="ap-item-title">Đánh giá tổng thể & lập kế hoạch năm 2</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ══════════════ DASHBOARD PANEL ══════════════ -->
+<div class="dash-overlay" id="dashOverlay">
+  <div class="dash-topbar">
+    <span class="dash-topbar-title">&#9679; Dashboard — Tổng hợp kết quả khảo sát</span>
+    <button class="dash-close" onclick="closeDashboard()">&#10005; Đóng</button>
+  </div>
+  <div class="dash-body">
+    <div class="dash-summary" id="dashSummary"></div>
+    <div class="dash-section-head">
+      <span class="dash-section-title">Report Maturity — Mức độ trưởng thành báo cáo</span>
+      <span class="dash-section-badge" style="background:var(--cream2);color:var(--ink3);">5 phòng ban</span>
+    </div>
+    <div class="maturity-grid" id="dashMaturity"></div>
+    <div class="dash-section-head">
+      <span class="dash-section-title">Điểm đau báo cáo — Tần suất xuất hiện</span>
+    </div>
+    <div id="dashPain"></div>
+    <div class="dash-section-head">
+      <span class="dash-section-title">Chỉ số vận hành chính</span>
+    </div>
+    <table class="kpi-table">
+      <thead>
+        <tr>
+          <th>Chỉ số</th>
+          <th>Sản xuất</th><th>QC/QA</th><th>Kho</th><th>Kế hoạch</th><th>Bảo trì</th>
+        </tr>
+      </thead>
+      <tbody id="dashKpiBody"></tbody>
+    </table>
+  </div>
+</div>
+<!-- Validation toast -->
+<div class="validate-toast" id="validateToast">
+  <button class="validate-toast-close" onclick="closeToast()">&#10005;</button>
+  <div class="validate-toast-title">&#9888; Vui lòng kiểm tra lại</div>
+  <ul class="validate-toast-list" id="validateList"></ul>
+</div>
+
+<!-- ── Confirm Reset Modal ── -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">&#9888;</div>
+    <div class="confirm-title" id="confirmTitle">Xác nhận xóa dữ liệu</div>
+    <p class="confirm-sub" id="confirmSub">Dữ liệu đã điền sẽ bị xóa và bạn có thể điền lại từ đầu.</p>
+    <div class="confirm-actions">
+      <button class="btn" style="background:var(--cream);color:var(--ink2);border:1px solid var(--rule2);" onclick="closeConfirm()">Hủy</button>
+      <button class="btn" style="background:var(--red);color:#fff;" id="confirmOkBtn" onclick="executeReset()">Xóa & làm lại</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

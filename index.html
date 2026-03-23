@@ -112,7 +112,7 @@ body {
 }
 .hero-chip.active { border-color: var(--gold); color: var(--gold); }
 
-/* ── DEPT NAV ── */
+/* ── DEPT NAV — DESKTOP base ── */
 .dept-nav {
   background: var(--white);
   border-bottom: 1px solid var(--rule);
@@ -479,16 +479,264 @@ select option { background: var(--white); color: var(--ink); }
 .export-card-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: var(--ink); }
 .export-card-sub { font-size: 12px; color: var(--ink3); font-family: 'DM Mono', monospace; }
 
-/* Responsive */
-@media (max-width: 700px) {
-  .hero { padding: 32px 24px 28px; }
-  .dept-nav { padding: 0 16px; overflow-x: auto; }
-  .body-wrap { padding: 24px 16px 100px; }
-  .form-grid.g2, .form-grid.g3, .form-grid.g4 { grid-template-columns: 1fr; }
-  .action-bar { padding: 12px 16px; }
+/* ═══════════════════════════════════════════════
+   MOBILE-FIRST RESPONSIVE SYSTEM
+   Base styles = mobile, scale up for desktop
+   ═══════════════════════════════════════════════ */
+
+/* ── MOBILE BASE (< 480px) ── */
+@media (max-width: 479px) {
+  body { font-size: 13px; }
+
+  /* Hero */
+  .hero { padding: 20px 16px 18px; }
+  .hero-title { font-size: 22px; }
+  .hero-desc { font-size: 12px; margin-bottom: 14px; }
+  .hero-kicker { font-size: 10px; margin-bottom: 10px; }
+  .hero-chips { gap: 6px; }
+  .hero-chip { padding: 4px 10px; font-size: 10px; }
+  .config-trigger { font-size: 11px; padding: 5px 12px; margin-top: 12px; }
+
+  /* Nav — hidden on mobile, replaced by bottom nav */
+  .dept-nav { display: none !important; }
+
+  /* Layout */
+  .body-wrap { padding: 16px 12px 90px; }
+
+  /* Section header */
+  .section-head {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+  }
+  .section-title { font-size: 20px; }
+  .section-badge { align-self: flex-start; }
+
+  /* Cards */
+  .card-head { padding: 10px 14px; }
+  .card-body { padding: 14px; }
+
+  /* Form grids → all single column */
+  .form-grid.g2,
+  .form-grid.g3,
+  .form-grid.g4 { grid-template-columns: 1fr; gap: 12px; }
+
+  /* Score grid — horizontal scroll */
+  .score-grid { font-size: 11px; overflow-x: auto; }
+  .score-row-label { font-size: 12px; }
+
+  /* Data tables — scroll */
+  .data-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table { min-width: 480px; }
+
+  /* Chart dashboard */
+  .chart-dashboard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 14px 12px;
+  }
+  .chart-wrap { width: 100px; height: 100px; margin: 0 auto; }
+  .chart-legend { width: 100%; }
+  .chart-center-pct { font-size: 22px; }
+
+  /* Action bar */
+  .action-bar {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .action-left { gap: 8px; flex-wrap: wrap; }
+  .action-right { gap: 8px; }
+  .btn { height: 36px; padding: 0 14px; font-size: 12px; }
+  .autosave { font-size: 10px; }
+
+  /* Progress */
+  .progress-wrap { padding: 12px 14px; gap: 10px; }
+  .progress-text { font-size: 10px; }
+
+  /* Callout */
+  .callout { font-size: 12px; padding: 10px 12px; }
+
+  /* Dashboard overlay */
+  .dash-topbar { padding: 0 16px; }
+  .dash-body { padding: 16px 14px 60px; }
+  .dash-summary { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dash-dept-card { padding: 10px 12px; }
+  .maturity-grid { grid-template-columns: 100px repeat(5,1fr); font-size: 10px; overflow-x: auto; }
+  .mg-label { font-size: 11px; padding: 10px 10px; }
+  .pain-bar-wrap { width: 80px; }
+  .kpi-table { font-size: 11px; overflow-x: auto; display: block; }
+
+  /* Action Plan panel */
+  .ap-hero { padding: 20px 16px 16px; }
+  .ap-hero-title { font-size: 22px; }
+  .ap-kpis { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .ap-kpi-val { font-size: 20px; }
+  .ap-body { padding: 16px 14px 20px; }
+  .ap-phase-head { flex-wrap: wrap; gap: 8px; }
+  .ap-item { grid-template-columns: 24px 1fr; gap: 10px; padding: 12px 12px; }
+  .ap-item-deadline { grid-column: 1 / -1; text-align: left; }
+  .ap-num { width: 24px; height: 24px; font-size: 10px; }
+
+  /* Gantt — scroll */
+  .gantt-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .gantt-months,
+  .gantt-row { min-width: 480px; }
+
+  /* Readiness grid */
+  .readiness-wrap { grid-template-columns: 1fr; gap: 12px; }
+  .readiness-bar-label { width: 80px; }
+
+  /* Panel overlays */
+  .panel-inner { border-radius: 0; }
+  .panel-top-bar { padding: 14px 16px; }
+  .panel-body { padding: 16px; }
+  .panel-overlay { padding: 0; }
+
+  /* Guide */
+  .guide-dept-head { font-size: 11px; }
+  .guide-step-title { font-size: 12px; }
+
+  /* Export grid */
+  .export-grid { grid-template-columns: 1fr; }
+
+  /* Validate toast */
+  .validate-toast {
+    left: 12px; right: 12px; bottom: 80px;
+    min-width: unset; max-width: unset;
+  }
+
+  /* EJS modal */
+  .ejs-modal { padding: 20px 18px; }
+  .ejs-modal-title { font-size: 18px; }
+  .ejs-actions { flex-direction: column; }
+
+  /* Confirm */
+  .confirm-actions { flex-direction: column; }
+  .confirm-actions .btn { width: 100%; }
+
+  /* Readiness labels */
+  .readiness-card { padding: 12px; }
 }
 
-/* ── section-head alias (HTML uses .section-head) ── */
+/* ── SMALL MOBILE (480px – 639px) ── */
+@media (min-width: 480px) and (max-width: 639px) {
+  .hero { padding: 24px 20px 22px; }
+  .hero-title { font-size: 26px; }
+  /* Nav hidden — bottom nav used instead */
+  .dept-nav { display: none !important; }
+  .body-wrap { padding: 20px 16px 90px; }
+  .form-grid.g2,
+  .form-grid.g3,
+  .form-grid.g4 { grid-template-columns: 1fr; }
+  .chart-dashboard { flex-direction: column; gap: 16px; }
+  .action-bar { padding: 10px 16px; }
+  .dash-summary { grid-template-columns: 1fr 1fr; }
+  .ap-kpis { grid-template-columns: 1fr 1fr; }
+  .readiness-wrap { grid-template-columns: 1fr; }
+  .gantt-wrap { overflow-x: auto; }
+  .gantt-months, .gantt-row { min-width: 480px; }
+  .panel-overlay { padding: 0; }
+  .panel-inner { border-radius: 0; }
+}
+
+/* ── TABLET NAV: 2-row layout (640px – 959px) ── */
+@media (min-width: 640px) and (max-width: 959px) {
+  .hero { padding: 36px 32px 30px; }
+  .hero-title { font-size: 30px; }
+
+  /* 2-row nav */
+  .dept-nav {
+    padding: 0 16px;
+    flex-wrap: wrap;
+    gap: 0;
+    display: flex !important;
+  }
+
+  /* Row 1: main dept tabs — equal width, fill row */
+  .dept-tab[data-dept] {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 11px 8px;
+    font-size: 11px;
+    gap: 5px;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Shrink text for very small tablets */
+  @media (max-width: 720px) {
+    .dept-tab[data-dept] { font-size: 10px; padding: 10px 5px; gap: 4px; }
+    .dept-dot { width: 6px; height: 6px; }
+  }
+
+  /* Row 2: utility tabs — push to second line, right-aligned */
+  .dept-tab.nav-special {
+    order: 10;
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    font-size: 11px !important;
+    border-top: 1px solid var(--rule);
+    border-bottom: none !important;
+    background: var(--cream);
+    color: var(--ink3) !important;
+  }
+  /* Fill remaining space on row 2 */
+  .dept-tab.nav-special:first-of-type {
+    margin-left: auto;
+  }
+  /* Active dept tab uses gold underline on row 1 */
+  .dept-tab[data-dept].active {
+    border-bottom-color: var(--gold);
+  }
+  /* Done badge adjust */
+  .dept-tab.done::after { top: 7px; right: 4px; width: 14px; height: 14px; font-size: 9px; }
+
+  .body-wrap { padding: 28px 24px 90px; }
+  .form-grid.g3,
+  .form-grid.g4 { grid-template-columns: 1fr 1fr; }
+  .action-bar { padding: 12px 24px; }
+  .dash-summary { grid-template-columns: repeat(3,1fr); }
+  .ap-kpis { grid-template-columns: repeat(2,1fr); }
+  .readiness-wrap { grid-template-columns: 1fr 1fr; }
+  .gantt-wrap { overflow-x: auto; }
+  .gantt-months, .gantt-row { min-width: 580px; }
+}
+
+/* ── DESKTOP (≥ 960px) — original layout ── */
+@media (min-width: 960px) {
+  .hero { padding: 48px 60px 40px; }
+  .dept-nav { padding: 0 60px; display: flex !important; flex-wrap: nowrap; }
+  .body-wrap { padding: 40px 60px 100px; max-width: 960px; margin: 0 auto; }
+  .form-grid.g2 { grid-template-columns: 1fr 1fr; }
+  .form-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.g4 { grid-template-columns: repeat(4,1fr); }
+  .action-bar { padding: 14px 60px; }
+  .dash-summary { grid-template-columns: repeat(5,1fr); }
+  .ap-kpis { grid-template-columns: repeat(4,1fr); }
+  .readiness-wrap { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── TOUCH FRIENDLINESS (all mobile/tablet) ── */
+@media (max-width: 959px) {
+  .btn { min-height: 44px; }
+  .chip { min-height: 36px; }
+  input[type=text], input[type=number], input[type=date],
+  input[type=email], select { height: 42px; font-size: 16px; }
+  textarea { font-size: 16px; }
+  .score-radio { width: 20px; height: 20px; }
+  .toggle-row { padding: 13px 14px; min-height: 44px; }
+  .section-title { font-size: 22px; }
+  .legend-item:hover { background: none; }
+}
+
+.data-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.kpi-table { min-width: 480px; }
+
+
 .section-head {
   display: flex; align-items: flex-start; justify-content: space-between;
   margin-bottom: 28px; padding-bottom: 20px;
@@ -698,6 +946,555 @@ select option { background: var(--white); color: var(--ink); }
 .dash-pending-msg { text-align: center; padding: 40px 20px; color: var(--ink3); font-size: 13px; background: var(--white); border: 1px dashed var(--rule2); border-radius: var(--r2); }
 .dash-section-badge { font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 3px; margin-left: auto; background: var(--cream2); color: var(--ink3); border: 1px solid var(--rule); }
 
+/* ═══════════════════════════════════════════════
+   MOBILE UX/UI ENHANCEMENTS
+   ═══════════════════════════════════════════════ */
+
+/* ── 1. MOBILE BOTTOM NAV (replaces top dept-nav on mobile ≤639px) ── */
+.mobile-bottom-nav {
+  display: none;
+}
+@media (max-width: 639px) {
+  /* Bottom nav visible */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--ink);
+    z-index: 70;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .mob-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px 6px;
+    gap: 3px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 56px;
+  }
+  .mob-tab:active { background: rgba(255,255,255,0.06); }
+  .mob-tab.active { background: rgba(168,130,58,0.15); }
+  .mob-tab-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .mob-tab.active .mob-tab-dot { opacity: 1; transform: scale(1.2); }
+  .mob-tab-label {
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.3px;
+    text-align: center;
+    line-height: 1.2;
+    transition: color 0.15s;
+  }
+  .mob-tab.active .mob-tab-label { color: var(--gold); }
+  .mob-tab-done {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 14px; height: 14px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px;
+    color: white;
+    font-weight: 700;
+    display: none;
+  }
+  .mob-tab.done .mob-tab-done { display: flex; }
+
+  /* Push body content above bottom nav */
+  .body-wrap { padding-bottom: calc(56px + env(safe-area-inset-bottom) + 16px) !important; }
+
+  /* Hide desktop action bar, show mobile action bar */
+  .action-bar { display: none !important; }
+  .mobile-action-bar {
+    display: flex !important;
+    position: fixed;
+    bottom: calc(56px + env(safe-area-inset-bottom));
+    left: 0; right: 0;
+    background: rgba(26,24,20,0.97);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 10px 14px;
+    gap: 8px;
+    z-index: 65;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    align-items: center;
+  }
+  .mobile-action-bar .autosave {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    display: flex; align-items: center; gap: 5px;
+    flex: 1;
+  }
+  .mobile-action-bar .btn {
+    height: 40px;
+    font-size: 12px;
+    padding: 0 14px;
+    flex-shrink: 0;
+  }
+}
+
+/* Default: hide mobile action bar on desktop */
+.mobile-action-bar { display: none; }
+
+/* ── 2. SCORE-GRID → CARD LIST ON MOBILE ── */
+@media (max-width: 639px) {
+  .score-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0;
+    overflow-x: unset;
+  }
+  /* Hide column headers on mobile */
+  .score-grid .sg-header { display: none; }
+  /* Each row becomes a card */
+  .score-row {
+    display: flex !important;
+    flex-direction: column;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--white);
+    gap: 10px;
+  }
+  .score-row-label {
+    padding: 0 !important;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink2);
+  }
+  /* Radio buttons become a row of 5 */
+  .score-row > .score-cell { display: none; } /* hide original cells */
+  .score-row-radios {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--rule2);
+    border-radius: var(--r2);
+    overflow: hidden;
+  }
+  .score-radio-btn {
+    flex: 1;
+    text-align: center;
+  }
+  .score-radio-btn input { display: none; }
+  .score-radio-btn label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    border-right: 1px solid var(--rule2);
+    margin: 0;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .score-radio-btn:last-child label { border-right: none; }
+  .score-radio-btn input:checked + label {
+    background: var(--gold);
+    color: var(--white);
+  }
+}
+
+/* ── 3. STICKY PROGRESS BAR (top of screen, below hero) ── */
+.mobile-progress-sticky {
+  display: none;
+}
+@media (max-width: 639px) {
+  .mobile-progress-sticky {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 49;
+    background: var(--ink);
+    padding: 6px 14px 7px;
+  }
+  .mps-bar-bg {
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mps-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .mps-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .mps-dept {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.5px;
+  }
+  .mps-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+  }
+}
+
+/* ── 4. HERO — compact on mobile with collapsible chips ── */
+@media (max-width: 639px) {
+  .hero-chips { display: none; } /* collapse chips on mobile to save space */
+  .hero-title { font-size: 20px !important; }
+  .hero-desc  { display: none; } /* hide desc on mobile */
+  .hero-kicker { font-size: 9px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hero { padding: 14px 14px 12px !important; }
+  .config-trigger { margin-top: 8px; }
+}
+
+/* ── 5. CARD ENHANCEMENTS on mobile ── */
+@media (max-width: 639px) {
+  .card { border-radius: 8px; margin-bottom: 12px; }
+  .card-head { padding: 11px 14px; }
+  .card-head-title { font-size: 10px; }
+  .card-body { padding: 14px 14px; }
+
+  /* Section header compact */
+  .section-head { margin-bottom: 14px; padding-bottom: 12px; }
+  .section-label { font-size: 9px; }
+  .section-title { font-size: 18px !important; }
+
+  /* Chart dashboard horizontal scroll prevention */
+  .chart-dashboard { padding: 12px 12px 10px; margin-bottom: 16px; }
+  .legend-item { padding: 6px 6px; }
+  .legend-name { font-size: 11px; }
+  .legend-status { font-size: 9px; padding: 2px 6px; }
+
+  /* Progress wrap */
+  .progress-wrap { margin-bottom: 16px; padding: 10px 12px; }
+
+  /* Callout */
+  .callout { border-radius: 4px; gap: 10px; font-size: 12px; }
+
+  /* Divider spacing */
+  .divider { margin: 14px 0; }
+
+  /* Chips — bigger tap targets */
+  .chip { min-height: 38px; padding: 6px 14px; font-size: 12px; border-radius: 20px; }
+
+  /* Toggle row */
+  .toggle-row { border-radius: 6px; }
+}
+
+/* ── 6. PANEL OVERLAYS — full screen on mobile ── */
+@media (max-width: 639px) {
+  .panel-overlay { padding: 0 !important; }
+  .panel-inner {
+    border-radius: 0 !important;
+    min-height: 100vh;
+  }
+  .panel-top-bar { padding: 12px 14px; position: sticky; top: 0; z-index: 5; background: var(--cream); }
+  .panel-top-title { font-size: 16px; }
+  .panel-body { padding: 14px 14px 80px; }
+
+  /* Action plan hero */
+  .ap-hero { padding: 16px 14px 14px !important; }
+  .ap-hero-title { font-size: 20px !important; }
+  .ap-kpis { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .ap-kpi { padding: 10px 12px; }
+  .ap-kpi-val { font-size: 18px; }
+  .ap-body { padding: 14px 14px 20px !important; }
+
+  /* Guide panel */
+  .guide-dept-body { padding: 12px 14px; }
+  .guide-step { gap: 10px; }
+
+  /* Export cards → single col */
+  .export-grid { grid-template-columns: 1fr !important; }
+  .export-card { padding: 14px 16px; }
+}
+
+/* ── 7. DASHBOARD OVERLAY — mobile friendly ── */
+@media (max-width: 639px) {
+  .dash-topbar { padding: 0 14px; height: 48px; }
+  .dash-topbar-title { font-size: 10px; }
+  .dash-body { padding: 14px 12px 80px !important; }
+  .dash-summary { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .dash-dept-card { padding: 10px 10px; }
+  .dash-dept-name { font-size: 9px; }
+
+  /* Maturity grid — horizontal scroll on mobile */
+  .maturity-grid {
+    display: block !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .maturity-grid > * { display: inline-block; }
+
+  /* Pain rows */
+  .pain-bar-wrap { width: 60px !important; }
+  .pain-row { padding: 8px 12px; }
+  .pain-label { font-size: 11px; }
+
+  /* KPI table */
+  .data-table-wrap { border-radius: var(--r2); overflow: hidden; }
+}
+
+/* ── 8. FORM INPUT IMPROVEMENTS on mobile ── */
+@media (max-width: 639px) {
+  /* Label improvements */
+  label {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .lbl-hint { font-size: 10px; }
+  .req { font-size: 11px; }
+
+  /* Unit wrap */
+  .unit-tag { font-size: 9px; right: 9px; }
+
+  /* Textarea */
+  textarea { min-height: 64px; }
+
+  /* Add row button */
+  .add-btn { height: 40px; font-size: 12px; margin-top: 10px; }
+
+  /* Field gap */
+  .field { gap: 4px; }
+  .form-grid { gap: 12px; }
+}
+
+/* ── 9. SMOOTH SCROLLING & SAFE AREAS ── */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+@supports (padding: max(0px)) {
+  .mobile-bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom), 4px);
+  }
+  .mobile-action-bar {
+    bottom: calc(56px + max(env(safe-area-inset-bottom), 0px));
+  }
+}
+
+/* ── 10. VALIDATION TOAST — full width on mobile ── */
+@media (max-width: 639px) {
+  .validate-toast {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(56px + env(safe-area-inset-bottom) + 58px) !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    font-size: 12px;
+  }
+}
+
+/* ── 11. CONFIRM MODAL — mobile padding ── */
+@media (max-width: 639px) {
+  .confirm-box {
+    padding: 24px 20px !important;
+    border-radius: 12px !important;
+  }
+  .confirm-title { font-size: 18px; }
+  .confirm-sub { font-size: 12px; }
+}
+
+/* ── 12. EJS MODAL — mobile ── */
+@media (max-width: 639px) {
+  .ejs-overlay { padding: 16px !important; }
+  .ejs-modal { padding: 20px 16px !important; border-radius: 10px; }
+  .ejs-modal-title { font-size: 18px; }
+  .ejs-actions { flex-direction: column !important; }
+  .ejs-actions .btn { width: 100%; justify-content: center; }
+}
+
+/* ═══════════════════════════════════════════════
+   ADMIN PASSWORD GATE
+   ═══════════════════════════════════════════════ */
+.admin-gate-overlay {
+  position: fixed; inset: 0;
+  background: rgba(26,24,20,0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 800;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.admin-gate-overlay.open {
+  display: flex;
+  animation: fadeIn 0.18s ease;
+}
+.admin-gate-box {
+  background: var(--white);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 28px 60px rgba(0,0,0,0.22);
+  overflow: hidden;
+  animation: gateSlideUp 0.22s ease;
+}
+@keyframes gateSlideUp {
+  from { opacity:0; transform: translateY(16px) scale(0.97); }
+  to   { opacity:1; transform: none; }
+}
+.admin-gate-box.shake {
+  animation: gateShake 0.4s ease;
+}
+@keyframes gateShake {
+  0%,100% { transform: translateX(0); }
+  15%     { transform: translateX(-8px); }
+  30%     { transform: translateX(8px); }
+  45%     { transform: translateX(-6px); }
+  60%     { transform: translateX(6px); }
+  75%     { transform: translateX(-3px); }
+  90%     { transform: translateX(3px); }
+}
+.admin-gate-head {
+  background: var(--ink);
+  padding: 24px 28px 20px;
+  position: relative;
+}
+.admin-gate-icon {
+  width: 40px; height: 40px;
+  background: rgba(168,130,58,0.15);
+  border: 1px solid rgba(168,130,58,0.3);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+.admin-gate-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px; font-weight: 300;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+.admin-gate-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.3px;
+}
+.admin-gate-close-btn {
+  position: absolute; top: 14px; right: 16px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.5);
+  border-radius: var(--r);
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px;
+  transition: all 0.15s;
+}
+.admin-gate-close-btn:hover {
+  background: rgba(255,255,255,0.16);
+  color: var(--white);
+}
+.admin-gate-body {
+  padding: 24px 28px 28px;
+}
+.admin-gate-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 8px;
+  display: block;
+  font-family: 'DM Mono', monospace;
+}
+.admin-gate-input-wrap {
+  position: relative; margin-bottom: 8px;
+}
+.admin-gate-input {
+  width: 100%; height: 46px !important;
+  padding: 0 46px 0 14px !important;
+  border: 1.5px solid var(--rule2) !important;
+  border-radius: var(--r2) !important;
+  font-size: 18px !important;
+  letter-spacing: 4px;
+  font-family: 'DM Mono', monospace !important;
+  color: var(--ink) !important;
+  background: var(--white) !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+.admin-gate-input:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(168,130,58,0.12) !important;
+  outline: none !important;
+}
+.admin-gate-input.error {
+  border-color: var(--red) !important;
+  background: var(--red-l) !important;
+  box-shadow: 0 0 0 3px rgba(184,50,50,0.1) !important;
+}
+.admin-gate-toggle-pw {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: var(--ink3); cursor: pointer;
+  font-size: 15px; padding: 4px;
+  line-height: 1;
+  transition: color 0.12s;
+}
+.admin-gate-toggle-pw:hover { color: var(--ink); }
+.admin-gate-error-msg {
+  font-size: 11px; color: var(--red);
+  font-family: 'DM Mono', monospace;
+  min-height: 16px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 5px;
+}
+.admin-gate-error-msg::before {
+  content: '✗';
+  font-weight: 700;
+}
+.admin-gate-error-msg:empty::before { display: none; }
+.admin-gate-btn {
+  width: 100%; height: 44px;
+  background: var(--gold); color: var(--white);
+  border: none; border-radius: var(--r2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.admin-gate-btn:hover { background: #8e6c2b; }
+.admin-gate-btn:active { transform: scale(0.98); }
+.admin-gate-hint {
+  margin-top: 14px; text-align: center;
+  font-size: 11px; color: var(--ink3);
+  font-family: 'DM Mono', monospace;
+  line-height: 1.6;
+}
+.admin-gate-hint a {
+  color: var(--gold); text-decoration: none; cursor: pointer;
+}
+.admin-gate-hint a:hover { text-decoration: underline; }
+/* Session badge on nav tab */
+.admin-unlocked-badge {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  margin-left: 4px;
+  vertical-align: middle;
+}
 </style>
 </head>
 <body>
@@ -718,6 +1515,17 @@ select option { background: var(--white); color: var(--ink); }
     <span class="config-dot" id="configDot"></span>
     <span id="configLabel">Chưa cấu hình gửi email — nhấn để thiết lập</span>
   </button>
+</div>
+
+<!-- MOBILE STICKY PROGRESS BAR -->
+<div class="mobile-progress-sticky" id="mobileProgressSticky">
+  <div class="mps-label">
+    <span class="mps-dept" id="mpsDeptLabel">Sản xuất</span>
+    <span class="mps-pct" id="mpsPct">0%</span>
+  </div>
+  <div class="mps-bar-bg">
+    <div class="mps-bar-fill" id="mpsBarFill"></div>
+  </div>
 </div>
 
 <!-- DEPT NAV -->
@@ -1614,7 +2422,7 @@ select option { background: var(--white); color: var(--ink); }
 
         <div class="divider"></div>
         <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;">Nguyên vật liệu chiến lược (rủi ro cung ứng cao)</div>
-        <table class="data-table" id="kh_nvl_table">
+        <div class="data-table-wrap"><table class="data-table" id="kh_nvl_table">
           <thead>
             <tr>
               <th>Tên NVL</th>
@@ -1643,7 +2451,7 @@ select option { background: var(--white); color: var(--ink); }
               <td><select><option>Thấp</option><option>Cao</option><option>Trung bình</option></select></td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
         <button class="add-btn" onclick="addNvlRow()">+ Thêm nguyên vật liệu</button>
       </div>
     </div>
@@ -1815,7 +2623,7 @@ select option { background: var(--white); color: var(--ink); }
     <div class="card">
       <div class="card-head"><div class="card-head-title">Danh sách thiết bị trọng yếu</div></div>
       <div class="card-body">
-        <table class="data-table" id="bt_equip_table">
+        <div class="data-table-wrap"><table class="data-table" id="bt_equip_table">
           <thead>
             <tr>
               <th>Thiết bị</th>
@@ -1848,7 +2656,7 @@ select option { background: var(--white); color: var(--ink); }
               <td><select><option>Không</option><option>Có</option><option>Thay mới</option></select></td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
         <button class="add-btn" onclick="addEquipRow()">+ Thêm thiết bị</button>
       </div>
     </div>
@@ -2664,8 +3472,10 @@ function closeGuide() {
   document.body.style.overflow = '';
 }
 function openAction() {
-  document.getElementById('actionPanel').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  requireAdmin('action', function() {
+    document.getElementById('actionPanel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
 }
 function closeAction() {
   document.getElementById('actionPanel').classList.remove('open');
@@ -2676,14 +3486,147 @@ function closeAction() {
 
 // ── Dashboard ──────────────────────────────────────────────────
 function openDashboard() {
-  renderDashboard();
-  document.getElementById('dashOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  requireAdmin('dashboard', function() {
+    renderDashboard();
+    document.getElementById('dashOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
 }
 function closeDashboard() {
   document.getElementById('dashOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+// ── Admin Gate ─────────────────────────────────────────────────
+// ⚠️  Đổi chuỗi này thành mật khẩu thực tế của bạn
+var ADMIN_PASSWORD = 'LifesFood@2025';
+
+// Session keys
+var GATE_SESSION_KEY = 'lf_admin_unlocked';
+var _gateCallback = null;
+var _gatePwVisible = false;
+var _gateAttempts = 0;
+var _gateLockUntil = 0;
+
+function isAdminUnlocked() {
+  try { return sessionStorage.getItem(GATE_SESSION_KEY) === '1'; } catch(e) { return false; }
+}
+function setAdminUnlocked() {
+  try { sessionStorage.setItem(GATE_SESSION_KEY, '1'); } catch(e) {}
+  // Show green badge on nav tabs
+  document.querySelectorAll('.dept-tab.nav-special').forEach(function(t) {
+    if (!t.querySelector('.admin-unlocked-badge')) {
+      var b = document.createElement('span');
+      b.className = 'admin-unlocked-badge';
+      b.title = 'Admin đã xác thực';
+      t.appendChild(b);
+    }
+  });
+}
+
+function requireAdmin(target, callback) {
+  if (isAdminUnlocked()) { callback(); return; }
+  _gateCallback = callback;
+  var titles = {
+    dashboard: { icon:'📊', title:'Dashboard — Kết quả khảo sát', sub:'Chỉ admin mới xem được dữ liệu tổng hợp' },
+    action:    { icon:'🎯', title:'Action Plan — Kế hoạch cải tiến', sub:'Chỉ admin mới xem được action plan' }
+  };
+  var t = titles[target] || titles.dashboard;
+  document.getElementById('adminGateIcon').textContent  = t.icon;
+  document.getElementById('adminGateTitle').textContent = t.title;
+  document.getElementById('adminGateSub').textContent   = t.sub;
+  document.getElementById('adminGateInput').value = '';
+  document.getElementById('adminGateError').textContent = '';
+  document.getElementById('adminGateInput').classList.remove('error');
+  _gatePwVisible = false;
+  document.getElementById('adminGateInput').type = 'password';
+  document.getElementById('adminGatePwToggle').textContent = '👁';
+  document.getElementById('adminGateOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('adminGateInput').focus(); }, 200);
+}
+
+function closeAdminGate() {
+  document.getElementById('adminGateOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _gateCallback = null;
+}
+
+function toggleGatePw() {
+  _gatePwVisible = !_gatePwVisible;
+  var inp = document.getElementById('adminGateInput');
+  var btn = document.getElementById('adminGatePwToggle');
+  inp.type = _gatePwVisible ? 'text' : 'password';
+  btn.textContent = _gatePwVisible ? '🙈' : '👁';
+  inp.focus();
+}
+
+function submitAdminGate() {
+  var now = Date.now();
+  // Lockout check
+  if (_gateLockUntil > now) {
+    var secs = Math.ceil((_gateLockUntil - now) / 1000);
+    showGateError('Tạm khóa ' + secs + 's do nhập sai nhiều lần');
+    return;
+  }
+  var inp = document.getElementById('adminGateInput');
+  var val = inp.value;
+  if (!val) { showGateError('Vui lòng nhập mật khẩu'); inp.focus(); return; }
+  if (val === ADMIN_PASSWORD) {
+    // SUCCESS
+    _gateAttempts = 0;
+    inp.classList.remove('error');
+    document.getElementById('adminGateError').textContent = '';
+    setAdminUnlocked();
+    closeAdminGate();
+    if (_gateCallback) { _gateCallback(); _gateCallback = null; }
+  } else {
+    // WRONG
+    _gateAttempts++;
+    inp.value = '';
+    inp.classList.add('error');
+    // Progressive lockout: 3 attempts → 10s, 5 → 30s, 7+ → 60s
+    var lockMs = 0;
+    if (_gateAttempts >= 7) lockMs = 60000;
+    else if (_gateAttempts >= 5) lockMs = 30000;
+    else if (_gateAttempts >= 3) lockMs = 10000;
+    if (lockMs > 0) { _gateLockUntil = now + lockMs; }
+    var msg = _gateAttempts >= 3
+      ? 'Sai mật khẩu (' + _gateAttempts + ' lần) — tạm khóa'
+      : 'Mật khẩu không đúng';
+    showGateError(msg);
+    // Shake animation
+    var box = document.getElementById('adminGateBox');
+    box.classList.remove('shake');
+    void box.offsetWidth; // reflow
+    box.classList.add('shake');
+    setTimeout(function() { box.classList.remove('shake'); }, 450);
+    inp.focus();
+  }
+}
+
+function showGateError(msg) {
+  var el = document.getElementById('adminGateError');
+  el.textContent = msg;
+  document.getElementById('adminGateInput').classList.add('error');
+}
+
+function adminForgot() {
+  document.getElementById('adminGateError').textContent = '';
+  document.getElementById('adminGateInput').classList.remove('error');
+  showGateError('Liên hệ: hainguyen.bo@gmail.com');
+}
+
+// Lock out admin session (useful for testing or logout)
+function adminLogout() {
+  try { sessionStorage.removeItem(GATE_SESSION_KEY); } catch(e) {}
+  document.querySelectorAll('.admin-unlocked-badge').forEach(function(b) { b.remove(); });
+}
+
+// Restore badge if already unlocked on page load
+document.addEventListener('DOMContentLoaded', function() {
+  if (isAdminUnlocked()) setAdminUnlocked();
+});
 
 function renderDashboard() {
   var data = collectData();
@@ -3454,7 +4397,7 @@ setDeptState = function(n, state) {
     <div class="dash-section-head">
       <span class="dash-section-title">Chỉ số vận hành chính</span>
     </div>
-    <table class="kpi-table">
+    <div class="data-table-wrap"><table class="kpi-table">
       <thead>
         <tr>
           <th>Chỉ số</th>
@@ -3462,7 +4405,7 @@ setDeptState = function(n, state) {
         </tr>
       </thead>
       <tbody id="dashKpiBody"></tbody>
-    </table>
+    </table></div>
   </div>
 </div>
 <!-- Validation toast -->
@@ -3484,6 +4427,213 @@ setDeptState = function(n, state) {
     </div>
   </div>
 </div>
+<!-- ══════════════ ADMIN PASSWORD GATE ══════════════ -->
+<div class="admin-gate-overlay" id="adminGateOverlay">
+  <div class="admin-gate-box" id="adminGateBox">
+    <div class="admin-gate-head">
+      <button class="admin-gate-close-btn" onclick="closeAdminGate()">✕</button>
+      <div class="admin-gate-icon" id="adminGateIcon">🔒</div>
+      <div class="admin-gate-title" id="adminGateTitle">Khu vực quản trị</div>
+      <div class="admin-gate-sub" id="adminGateSub">Nhập mật khẩu admin để tiếp tục</div>
+    </div>
+    <div class="admin-gate-body">
+      <label class="admin-gate-label">Mật khẩu</label>
+      <div class="admin-gate-input-wrap">
+        <input
+          class="admin-gate-input"
+          type="password"
+          id="adminGateInput"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')submitAdminGate()"
+        >
+        <button class="admin-gate-toggle-pw" type="button" onclick="toggleGatePw()" id="adminGatePwToggle" title="Hiện/ẩn mật khẩu">👁</button>
+      </div>
+      <div class="admin-gate-error-msg" id="adminGateError"></div>
+      <button class="admin-gate-btn" onclick="submitAdminGate()">
+        <span>Xác nhận</span> <span style="font-size:16px;">→</span>
+      </button>
+      <p class="admin-gate-hint">
+        Phiên làm việc được lưu tạm thời.<br>
+        Quên mật khẩu? <a onclick="adminForgot()">Liên hệ quản trị viên</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <div class="mob-tab active" data-dept="0" onclick="goTab(0)" id="mobTab0">
+    <div class="mob-tab-dot" style="background:#a8823a"></div>
+    <div class="mob-tab-label">Sản xuất</div>
+    <div class="mob-tab-done">✓</div>
+  </div>
+  <div class="mob-tab" data-dept="1" onclick="goTab(1)" id="mobTab1">
+    <div class="mob-tab-dot" style="background:#2e6b4a"></div>
+    <div class="mob-tab-label">QC/QA</div>
+    <div class="mob-tab-done">✓</div>
+  </div>
+  <div class="mob-tab" data-dept="2" onclick="goTab(2)" id="mobTab2">
+    <div class="mob-tab-dot" style="background:#2156a0"></div>
+    <div class="mob-tab-label">Kho</div>
+    <div class="mob-tab-done">✓</div>
+  </div>
+  <div class="mob-tab" data-dept="3" onclick="goTab(3)" id="mobTab3">
+    <div class="mob-tab-dot" style="background:#5e3a8c"></div>
+    <div class="mob-tab-label">Kế hoạch</div>
+    <div class="mob-tab-done">✓</div>
+  </div>
+  <div class="mob-tab" data-dept="4" onclick="goTab(4)" id="mobTab4">
+    <div class="mob-tab-dot" style="background:#b85a1e"></div>
+    <div class="mob-tab-label">Bảo trì</div>
+    <div class="mob-tab-done">✓</div>
+  </div>
+</nav>
+
+<!-- MOBILE ACTION BAR -->
+<div class="mobile-action-bar" id="mobileActionBar">
+  <div class="autosave"><div class="dot-pulse"></div>Tự động lưu</div>
+  <button class="btn btn-ghost" id="mobBtnCheck" onclick="validateTab()" style="font-size:12px;height:38px;padding:0 12px;">✓ Kiểm tra</button>
+  <button class="btn btn-green" id="mobBtnSend" onclick="sendDept()" style="font-size:12px;height:38px;padding:0 14px;">
+    <span id="mobBtnSendLabel">Xác nhận ✓</span>
+  </button>
+</div>
+
+<script>
+(function() {
+  // ── Mobile UX enhancements (IIFE to avoid global scope conflicts) ──
+
+  var MOB_DEPT_NAMES = ['Sản xuất','QC/QA','Kho & Logistics','Kế hoạch','Bảo trì'];
+
+  function syncMobileNav(idx) {
+    document.querySelectorAll('.mob-tab').forEach(function(t, i) {
+      t.classList.toggle('active', i === idx);
+    });
+    var lbl = document.getElementById('mpsDeptLabel');
+    if (lbl) lbl.textContent = MOB_DEPT_NAMES[idx] || '';
+  }
+
+  function updateMobileProgress() {
+    var fill = document.getElementById('mpsBarFill');
+    var pct  = document.getElementById('mpsPct');
+    var chartPct = document.getElementById('chartPct');
+    if (!fill) return;
+    var val = chartPct ? chartPct.textContent.trim() : '0%';
+    fill.style.width = val;
+    if (pct) pct.textContent = val;
+  }
+
+  function syncMobileDone() {
+    document.querySelectorAll('.mob-tab').forEach(function(t, i) {
+      var deptTab = document.querySelector('.dept-tab[data-dept="' + i + '"]');
+      if (deptTab && deptTab.classList.contains('done')) {
+        t.classList.add('done');
+      } else {
+        t.classList.remove('done');
+      }
+    });
+    updateMobileProgress();
+  }
+
+  function syncMobileSendBtn() {
+    var desktopBtn = document.getElementById('btnSendDept');
+    var mobileBtn  = document.getElementById('mobBtnSend');
+    if (!desktopBtn || !mobileBtn) return;
+    if (desktopBtn.classList.contains('btn-send-done')) {
+      mobileBtn.classList.add('btn-send-done');
+      mobileBtn.classList.remove('btn-green');
+      mobileBtn.style.pointerEvents = 'none';
+    } else if (desktopBtn.classList.contains('btn-send-error')) {
+      mobileBtn.classList.add('btn-send-error');
+      mobileBtn.classList.remove('btn-green');
+      mobileBtn.style.pointerEvents = '';
+    } else {
+      mobileBtn.classList.remove('btn-send-done','btn-send-error','btn-send-sending');
+      mobileBtn.classList.add('btn-green');
+      mobileBtn.style.pointerEvents = '';
+    }
+  }
+
+  function injectMobileScoreRadios() {
+    if (window.innerWidth > 639) return;
+    document.querySelectorAll('.score-grid').forEach(function(grid) {
+      if (grid.dataset.mobileInjected) return;
+      grid.dataset.mobileInjected = '1';
+      grid.querySelectorAll('.score-row').forEach(function(row) {
+        var radios = row.querySelectorAll('.score-cell input[type=radio]');
+        if (!radios.length) return;
+        var name = radios[0].name;
+        var wrap = document.createElement('div');
+        wrap.className = 'score-row-radios';
+        [1,2,3,4,5].forEach(function(val) {
+          var btn = document.createElement('div');
+          btn.className = 'score-radio-btn';
+          var inp = document.createElement('input');
+          inp.type = 'radio'; inp.name = name; inp.value = val;
+          inp.id = name + '_mob' + val;
+          var lbl = document.createElement('label');
+          lbl.htmlFor = name + '_mob' + val;
+          lbl.textContent = val;
+          btn.appendChild(inp);
+          btn.appendChild(lbl);
+          wrap.appendChild(btn);
+        });
+        // Sync new buttons → original hidden radios
+        wrap.addEventListener('change', function(e) {
+          var v = e.target.value;
+          row.querySelectorAll('.score-cell input').forEach(function(r) {
+            r.checked = (r.value == v);
+          });
+        });
+        row.appendChild(wrap);
+      });
+    });
+  }
+
+  // Patch goTab AFTER all other patches (var-based patches already ran)
+  // We wrap whatever goTab currently is at DOMContentLoaded time
+  window.addEventListener('DOMContentLoaded', function() {
+    // Wrap the final goTab (which already has reset-btn and other patches applied)
+    var _baseGoTab = window.goTab;
+    window.goTab = function(n) {
+      _baseGoTab(n);
+      syncMobileNav(n);
+      updateMobileProgress();
+      if (window.innerWidth <= 639) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    syncMobileNav(0);
+    injectMobileScoreRadios();
+    setTimeout(updateMobileProgress, 600);
+
+    // Watch send button class changes
+    var desktopSend = document.getElementById('btnSendDept');
+    if (desktopSend) {
+      new MutationObserver(syncMobileSendBtn)
+        .observe(desktopSend, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Watch dept-tabs for done state
+    document.querySelectorAll('.dept-tab').forEach(function(t) {
+      new MutationObserver(syncMobileDone)
+        .observe(t, { attributes: true, attributeFilter: ['class'] });
+    });
+
+    // Watch chartPct for progress updates
+    var chartPctEl = document.getElementById('chartPct');
+    if (chartPctEl) {
+      new MutationObserver(updateMobileProgress)
+        .observe(chartPctEl, { childList: true, characterData: true, subtree: true });
+    }
+  });
+
+  window.addEventListener('resize', function() {
+    if (window.innerWidth <= 639) injectMobileScoreRadios();
+  });
+})();
+</script>
 
 </body>
 </html>
